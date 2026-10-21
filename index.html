@@ -1,51 +1,1829 @@
-<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#132b48"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><title>NeuroScore Clinical</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><style>
-:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18304d;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}.app{max-width:1120px;margin:auto;padding:22px 16px 65px}header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:22px}.brand{font-size:25px;font-weight:800;letter-spacing:-.7px}.brand span{color:#147b89}.muted{color:#63748a}.pill{border-radius:40px;background:#e5f4f3;color:#126b73;padding:7px 12px;font-size:12px;font-weight:700}.hero{background:linear-gradient(110deg,#132b48,#176979);color:white;padding:25px;border-radius:22px;margin-bottom:18px}.hero h1{margin:0 0 8px;font-size:27px}.hero p{margin:0;opacity:.85;font-size:14px;line-height:1.55}.layout{display:grid;grid-template-columns:270px 1fr;gap:18px}.side,.panel{background:white;border:1px solid #e0e8f0;border-radius:17px;padding:17px}.side h3{margin:0 0 12px}.search{width:100%;padding:12px;border:1px solid #ccd8e3;border-radius:10px;font-size:14px;margin-bottom:12px}.category{font-size:11px;color:#6c8497;font-weight:800;margin:16px 0 5px;text-transform:uppercase;letter-spacing:.07em}.navitem{display:block;width:100%;text-align:left;border:0;padding:10px 11px;border-radius:9px;background:transparent;color:#25405b;cursor:pointer;font-size:14px}.navitem:hover,.navitem.active{background:#e8f4f5;color:#106778;font-weight:700}.panel h2{margin:0 0 5px;font-size:24px}.description{margin:0 0 17px;color:#627389;font-size:14px;line-height:1.55}.question{padding:14px 0;border-top:1px solid #edf0f3}.question label{display:block;font-weight:650;font-size:14px;margin-bottom:8px}.question select,.question input{width:100%;min-height:45px;border:1px solid #c9d5e0;border-radius:10px;background:white;padding:9px 11px;color:#192e45;font-size:15px}.question select:focus,.question input:focus{outline:2px solid #90d5db}.help{font-size:12px;color:#6b7f91;margin-top:5px}.result{margin-top:17px;border-radius:14px;background:#eaf2f7;padding:18px}.result strong{font-size:29px;display:block;margin-bottom:5px}.result p{margin:4px 0;font-size:14px}.result.incomplete{background:#fff5e5;color:#6b4d20}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.btn{background:#147b89;color:white;border:0;padding:11px 15px;border-radius:10px;font-weight:700;cursor:pointer}.btn.secondary{background:#eaf0f5;color:#24405a}.refs{font-size:12px;color:#60768d;border-top:1px solid #e7ecf0;margin-top:20px;padding-top:12px}.refs a{color:#086f87;overflow-wrap:anywhere}.warning{background:#fff8e9;border:1px solid #f5dca1;color:#755316;padding:13px;border-radius:12px;font-size:13px;margin-top:15px;line-height:1.6}.footer{font-size:12px;color:#697b8c;margin-top:20px;line-height:1.6}.catalog{background:#fff;border:1px solid #e4e9ee;border-radius:15px;padding:17px;margin-top:18px}.catalog summary{font-weight:750;cursor:pointer}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px}.chip{font-size:12px;padding:6px 8px;background:#eef3f7;border-radius:7px}.chip.todo{opacity:.75} .tiny{font-size:12px;margin-top:7px}.badge{font-size:12px;color:#0f6873;background:#dff2f1;border-radius:8px;padding:6px 9px;display:inline-block;margin:5px 0 10px}@media(max-width:760px){.app{padding:13px 12px 60px}.layout{grid-template-columns:1fr}.side{max-height:290px;overflow:auto}.hero{padding:20px}.hero h1{font-size:23px}.brand{font-size:22px}.panel h2{font-size:21px}}
-</style></head><body><main class="app"><header><div class="brand">Neuro<span>Score</span> <span style="color:#64788e;font-size:13px;font-weight:500">Clinical</span></div><div class="pill">PWA • Offline-ready</div></header><section class="hero"><h1>Neurology Clinical Calculators</h1><p>Stroke & neurointervention • Neuroinfeksi • GBS • Neuroonkologi • Nyeri. Kalkulasi lokal di perangkat, tanpa mengirim data pasien ke server.</p></section><div class="layout"><aside class="side"><h3>Daftar kalkulator</h3><input id="search" class="search" placeholder="Cari skor…" aria-label="Cari skor"><div id="nav"></div></aside><section class="panel"><div id="content"></div></section></div><details class="catalog"><summary>Katalog instrumen yang belum diimplementasikan</summary><div class="chips" id="catalog"></div><p class="muted tiny">Instrumen di atas bukan kalkulator aktif. Beberapa memerlukan lisensi, pengujian tambahan, atau penyesuaian guideline lokal.</p></details><p class="footer">NeuroScore v2.0 • Perangkat bantu dokumentasi dan edukasi tenaga medis, bukan perangkat medis tervalidasi atau pengganti penilaian klinis. Belum diintegrasikan dengan rekam medis rumah sakit. Jangan memasukkan identitas pasien pada instalasi demo.</p></main><script>
-const Q=(name,opts,help='')=>({name,opts,help});const yn=[['Tidak',0],['Ya',1]];
-const defs=[
-{id:'gcs',cat:'Neurocritical',name:'Glasgow Coma Scale (GCS)',desc:'E + V + M (3–15). Gunakan hanya jika semua komponen dapat dinilai; komponen non-testable perlu didokumentasikan secara terpisah.',qs:[Q('Eye (E)',[['Spontan',4],['Terhadap suara',3],['Terhadap nyeri',2],['Tidak ada respons',1]]),Q('Verbal (V)',[['Orientasi baik',5],['Bingung',4],['Kata tidak sesuai',3],['Suara tidak dimengerti',2],['Tidak ada respons',1]]),Q('Motor (M)',[['Mengikuti perintah',6],['Melokalisasi nyeri',5],['Withdrawal',4],['Fleksi abnormal',3],['Ekstensi',2],['Tidak ada respons',1]])],format:(s,v)=>({score:s+'/15',interpret:s<=8?'Kesadaran terganggu berat':s<=12?'Gangguan sedang':'Ringan / kesadaran relatif baik',detail:`E${v[0]} V${v[1]} M${v[2]}`}),ref:'https://www.glasgowcomascale.org/'},
-{id:'van',cat:'Stroke & Neurointervensi',name:'VAN — Vision Aphasia Neglect',desc:'Skrining emergent large vessel occlusion. Pemeriksaan awal kelemahan lengan adalah gerbang VAN; TANPA kelemahan lengan, hasil VAN negatif menurut metode asli.',qs:[Q('Kelemahan lengan / arm drift',yn),Q('Gangguan visual baru',yn),Q('Afasia',yn),Q('Neglect / forced gaze',yn)],compute:v=>({score:v[0]===1&&v.slice(1).some(Boolean)?'VAN POSITIF':'VAN NEGATIF',interpret:v[0]===1&&v.slice(1).some(Boolean)?'Kecurigaan LVO meningkat: prioritaskan alur stroke dan vascular imaging sesuai indikasi.':'VAN negatif tidak menyingkirkan LVO, terutama defisit nonmotor atau sirkulasi posterior.',detail:'Kelemahan lengan '+(v[0]?'ada':'tidak ada')}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC5284468/'},
-{id:'race',cat:'Stroke & Neurointervensi',name:'RACE — Rapid Arterial Occlusion Evaluation',desc:'Skrining LVO 0–9. Item terakhir menilai aphasia pada hemiparesis kanan ATAU agnosia/neglect pada hemiparesis kiri; tidak keduanya.',qs:[Q('Facial palsy',[['Simetris',0],['Asimetri ringan',1],['Asimetri berat',2]]),Q('Arm motor',[['Tahan >10 detik',0],['Turun sebelum 10 detik',1],['Langsung jatuh',2]]),Q('Leg motor',[['Tahan >5 detik',0],['Turun sebelum 5 detik',1],['Langsung jatuh',2]]),Q('Head/gaze deviation',yn),Q('Lateralisasi untuk item kortikal',[['Hemiparesis kanan → aphasia','aphasia'],['Hemiparesis kiri → agnosia/neglect','neglect']], 'Pilih sisi hemiparesis.'),Q('Aphasia/agnosia (sesuai sisi)',[['Tidak ada / 2 instruksi berhasil',0],['Satu tanda / 1 instruksi berhasil',1],['Dua tanda / 0 instruksi berhasil',2]])],compute:v=>{let s=Number(v[0])+Number(v[1])+Number(v[2])+Number(v[3])+Number(v[5]);return {score:s+'/9',interpret:s>=5?'RACE ≥5: skrining positif untuk kemungkinan LVO.':'RACE <5: LVO tetap mungkin; pertimbangkan klinis dan angiografi.',detail:'Domain kortikal: '+(v[4]==='aphasia'?'aphasia':'agnosia/neglect')}},ref:'https://racescale.org/how-to-use/table/'},
-{id:'aspects',cat:'Stroke & Neurointervensi',name:'ASPECTS (CT MCA)',desc:'Sepuluh wilayah MCA dinilai: pilih Ya bila ada perubahan iskemik dini. Nilai mulai dari 10 lalu dikurangi 1 per wilayah abnormal; hanya untuk wilayah MCA yang relevan.',qs:['C','L','IC','I','M1','M2','M3','M4','M5','M6'].map(k=>Q('Perubahan iskemik dini: '+k,yn)),compute:v=>{let s=10-v.reduce((a,b)=>a+Number(b),0);return {score:s+'/10',interpret:'Nilai lebih rendah menunjukkan area iskemik dini lebih luas. Kelayakan reperfusi tidak ditentukan oleh ASPECTS saja.',detail:'Abnormal: '+(['C','L','IC','I','M1','M2','M3','M4','M5','M6'].filter((_,i)=>v[i]===1).join(', ')||'tidak ada')}},ref:'https://www.aspectsinstroke.com/'},
-{id:'ich',cat:'Stroke & Neurointervensi',name:'ICH Score',desc:'Stratifikasi keparahan ICH (0–6), bukan alasan tunggal untuk pembatasan terapi.',qs:[Q('GCS',[['13–15',0],['5–12',1],['3–4',2]]),Q('Umur ≥80 tahun',yn),Q('Volume ICH ≥30 mL',yn),Q('Perdarahan intraventrikular',yn),Q('Lokasi infratentorial',yn)],format:s=>({score:s+'/6',interpret:'Skor lebih tinggi berkaitan dengan risiko luaran buruk pada kohort pengembangan. Jangan digunakan sendiri untuk membatasi terapi.'}),ref:'https://pubmed.ncbi.nlm.nih.gov/11283388/'},
-{id:'mrs',cat:'Stroke & Neurointervensi',name:'Modified Rankin Scale (mRS)',desc:'Penilaian disabilitas global 0–6. Pilih satu deskripsi yang paling sesuai.',qs:[Q('Status disabilitas',[['0 — Tanpa gejala',0],['1 — Gejala tanpa disabilitas bermakna',1],['2 — Disabilitas ringan, mandiri urusan diri',2],['3 — Butuh bantuan, masih berjalan mandiri',3],['4 — Tak mampu berjalan atau memenuhi kebutuhan sendiri tanpa bantuan',4],['5 — Bedridden, inkontinensia, memerlukan asuhan konstan',5],['6 — Meninggal',6]])],format:s=>({score:String(s),interpret:'Modified Rankin Scale grade '+s}),ref:'https://www.ukri.org/'},
-{id:'bmrc',cat:'Neuroinfeksi',name:'Modified BMRC — Meningitis TB',desc:'Stadium klinis TB meningitis berdasar GCS dan defisit fokal.',qs:[Q('GCS (total)',Array.from({length:13},(_,i)=>[String(i+3),i+3])),Q('Defisit neurologis fokal',yn)],compute:v=>{let g=Number(v[0]);let n=g<=10?'III':g<=14||v[1]===1?'II':'I';return {score:'Grade '+n,interpret:n==='III'?'TBM berat':n==='II'?'TBM sedang':'TBM awal',detail:`GCS ${g}; defisit fokal ${v[1]?'ya':'tidak'}`}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC5399942/'},
-{id:'hughes',cat:'GBS & Neuromuskular',name:'GBS Disability Score (Hughes)',desc:'Derajat disabilitas pada Guillain–Barré syndrome.',qs:[Q('Kondisi pasien',[['0 — Sehat',0],['1 — Gejala minor; bisa lari',1],['2 — Berjalan ≥10 m tanpa bantuan, tidak dapat lari',2],['3 — Berjalan ≥10 m dengan bantuan',3],['4 — Bedridden / chairbound',4],['5 — Membutuhkan ventilasi mekanik',5],['6 — Meninggal',6]])],format:s=>({score:s+'/6',interpret:'GBS disability grade '+s}),ref:'https://gbs.tghn.org/'},
-{id:'mrc',cat:'GBS & Neuromuskular',name:'MRC Sum Score (GBS)',desc:'Enam kelompok otot di kedua sisi, total 12 penilaian dengan skala 0–5 (total 0–60).',qs:['Shoulder abduction R','Shoulder abduction L','Elbow flexion R','Elbow flexion L','Wrist extension R','Wrist extension L','Hip flexion R','Hip flexion L','Knee extension R','Knee extension L','Ankle dorsiflexion R','Ankle dorsiflexion L'].map(n=>Q(n,[['0',0],['1',1],['2',2],['3',3],['4',4],['5',5]])),format:s=>({score:s+'/60',interpret:'Nilai lebih rendah menunjukkan kelemahan otot lebih berat; interpretasikan bersama pemeriksaan respirasi, fungsi bulbar, dan disabilitas.'}),ref:'https://gbs.tghn.org/'},
-{id:'sins',cat:'Neuroonkologi',name:'SINS — Spinal Instability Neoplastic Score',desc:'Enam domain untuk menilai instabilitas neoplastik (0–18). Skor ≥7 memerlukan penilaian ahli tulang belakang.',qs:[Q('Lokasi',[['Junctional C0–C2/C7–T2/T11–L1/L5–S1',3],['Mobile C3–C6/L2–L4',2],['Semirigid T3–T10',1],['Rigid S2–S5',0]]),Q('Nyeri',[['Nyeri mekanik, membaik berbaring',3],['Nyeri sesekali tetapi non-mekanik',1],['Tanpa nyeri',0]]),Q('Lesi tulang',[['Lytic',2],['Mixed',1],['Blastic',0]]),Q('Alignment',[['Subluxation / translation',4],['Deformitas baru',2],['Normal',0]]),Q('Kolaps korpus',[['>50%',3],['<50%',2],['Tanpa kolaps tetapi keterlibatan >50%',1],['Tidak ada / keterlibatan ≤50%',0]]),Q('Keterlibatan posterolateral',[['Bilateral',3],['Unilateral',1],['Tidak ada',0]])],format:s=>({score:s+'/18',interpret:s>=13?'Tidak stabil — perlu evaluasi spinal segera':s>=7?'Berpotensi tidak stabil — rujuk/ konsultasi spesialis spinal':'Stabil berdasarkan SINS; tetap evaluasi neurologis dan imaging.'}),ref:'https://www.ncbi.nlm.nih.gov/books/NBK608600/table/ch20.Tab1/'},
-{id:'bilsky',cat:'Neuroonkologi',name:'Bilsky ESCC Grade',desc:'Klasifikasi radiologis epidural spinal cord compression berdasarkan MRI axial T2. Bukan skor penjumlahan.',qs:[Q('Grade kompresi',[['0 — Tumor terbatas tulang, tanpa epidural','0'],['1a — Epidural, tanpa deformasi thecal sac','1a'],['1b — Deformasi thecal sac, tanpa abutment cord','1b'],['1c — Abutment cord tanpa kompresi','1c'],['2 — Kompresi cord dengan CSF masih tampak','2'],['3 — Kompresi cord tanpa CSF terlihat','3']])],compute:v=>({score:'Grade '+v[0],interpret:['2','3'].includes(v[0])?'High-grade ESCC: butuh evaluasi MSCC segera.':'Korelasikan dengan gejala dan MRI serta keterlibatan neurologis.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC6760340/'},
-{id:'nrs',cat:'Nyeri',name:'Numeric Rating Scale (NRS)',desc:'Intensitas nyeri yang dilaporkan pasien pada skala 0–10.',qs:[Q('NRS saat ini',Array.from({length:11},(_,i)=>[String(i),i]))],format:s=>({score:s+'/10',interpret:s===0?'Tidak nyeri':s<=3?'Nyeri ringan (cutoff operasional)':s<=6?'Nyeri sedang (cutoff operasional)':'Nyeri berat (cutoff operasional)'}),ref:'https://www.iasp-pain.org/'},
-{id:'dn4',cat:'Nyeri',name:'DN4 — Skrining Nyeri Neuropatik',desc:'Sepuluh item: 7 anamnesis dan 3 pemeriksaan fisik. Ambang ≥4 mendukung komponen neuropatik, bukan diagnosis definitif.',qs:['Rasa terbakar','Sensasi dingin yang menyakitkan','Seperti tersengat listrik','Kesemutan','Rasa tertusuk jarum','Baals / numbness','Gatal','Hipestesia terhadap sentuhan (periksa)','Hipestesia terhadap pinprick (periksa)','Nyeri saat disapu sikat ringan (periksa)'].map(x=>Q(x,yn)),format:s=>({score:s+'/10',interpret:s>=4?'Skrining POSITIF untuk nyeri neuropatik':'Skrining negatif; evaluasi klinis tetap diperlukan'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC2217518/'}
-];
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NeuroCalc Pro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
+  <title>Neuro-Clinical Calculator — Elektrolit, AGD & Neuro-Intensive</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --primary: #0284c7;
+      --primary-bg: #e0f2fe;
+      --primary-text: #075985;
+      --amber-bg: #fef3c7;
+      --amber-text: #92400e;
+      --emerald-bg: #d1fae5;
+      --emerald-text: #065f46;
+      --rose-bg: #ffe4e6;
+      --rose-text: #9f1239;
+      --purple-bg: #f3e8ff;
+      --purple-text: #6b21a8;
+      --dark: #0f172a;
+      --dark-card: #1e293b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      padding-bottom: 60px;
+    }
+    header {
+      background: var(--dark);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .container { max-width: 1220px; margin: 0 auto; padding: 0 14px; }
+    .header-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      gap: 10px;
+    }
+    .title-group h1 { font-size: 1.08rem; font-weight: 700; }
+    .title-group p { font-size: 0.74rem; color: #94a3b8; }
+    .global-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      background: var(--dark-card);
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+    }
+    .global-inputs label { font-size: 0.75rem; color: #cbd5e1; font-weight: 600; }
+    .global-inputs input {
+      width: 64px;
+      background: var(--dark);
+      color: #38bdf8;
+      border: 1px solid #475569;
+      border-radius: 6px;
+      padding: 4px 6px;
+      font-weight: 700;
+      text-align: center;
+      font-size: 16px !important;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scrollbar-width: none;
+    }
+    .nav-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: var(--dark-card);
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (min-width: 860px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+    .card-header h2 { font-size: 0.98rem; font-weight: 700; color: #0f172a; }
+    .card-header p { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .badge {
+      font-size: 0.69rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .badge-blue { background: var(--primary-bg); color: var(--primary-text); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-emerald { background: var(--emerald-bg); color: var(--emerald-text); }
+    .badge-rose { background: var(--rose-bg); color: var(--rose-text); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple-text); }
 
-// NeuroScore extension v2: derived from published instrument definitions. Tool remains educational.
-const Y=(n,points=1)=>Q(n,[['Tidak',0],['Ya',points]]);
-const B=(n,opts)=>Q(n,opts);
-defs.push(
-{id:'pcaspects',cat:'Stroke & Neurointervensi',name:'pc-ASPECTS (Posterior Circulation)',desc:'10-point posterior circulation ASPECTS: setiap talamus, cerebellum dan teritori PCA = 1 poin; pons dan midbrain masing-masing = 2 poin. Tentukan perubahan iskemik dengan modalitas yang sesuai.',qs:['Talamus kanan','Talamus kiri','Serebelum kanan','Serebelum kiri','Teritori PCA kanan','Teritori PCA kiri'].map(x=>Y('Iskemia: '+x)).concat([Y('Iskemia pons',2),Y('Iskemia midbrain',2)]),compute:v=>{let s=10-v.reduce((a,b)=>a+Number(b),0);return {score:s+'/10',interpret:'Skor rendah menandakan beban iskemik posterior lebih besar. Tidak menentukan kelayakan trombektomi secara mandiri.'}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9358301/'},
-{id:'mtici',cat:'Stroke & Neurointervensi',name:'mTICI — Reperfusi Angiografi',desc:'Klasifikasi angiografi setelah EVT, bukan skor penjumlahan. eTICI tersedia secara terpisah untuk pembagian reperfusi yang lebih halus.',qs:[B('mTICI pascaprosedur',[['0 — Tidak ada reperfusi','0'],['1 — Penetrasi minimal tanpa perfusi bermakna','1'],['2a — <50% wilayah target reperfusi','2a'],['2b — ≥50% tetapi belum lengkap','2b'],['2c — Hampir lengkap (jika digunakan dalam sistem setempat)','2c'],['3 — Reperfusi lengkap','3']])],compute:v=>({score:'mTICI '+v[0],interpret:['2b','2c','3'].includes(v[0])?'Reperfusi substansial menurut klasifikasi.':'Reperfusi belum substansial. Dokumentasikan daerah target dan angiografi.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC7963546/'},
-{id:'etici',cat:'Stroke & Neurointervensi',name:'eTICI — Extended TICI',desc:'Klasifikasi reperfusi angiografi terinci; pilih estimasi proporsi reperfusi wilayah iskemik target.',qs:[B('Derajat eTICI',[['0 — 0%','0'],['1 — Aliran distal tanpa reperfusi berarti','1'],['2a — 1–49%','2a'],['2b50 — 50–66%','2b50'],['2b67 — 67–89%','2b67'],['2c — 90–99%','2c'],['3 — 100%','3']])],compute:v=>({score:'eTICI '+v[0],interpret:'Grade angiografi reperfusi: nilai lebih tinggi menunjukkan cakupan reperfusi yang lebih besar.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC6301223/'},
-{id:'hunt',cat:'Stroke & Neurointervensi',name:'Hunt & Hess (SAH)',desc:'Klasifikasi derajat klinis perdarahan subaraknoid aneurismal; pilih gambaran dominan.',qs:[B('Derajat klinis',[['I — Asimtomatik atau sakit kepala ringan/kaku kuduk minimal',1],['II — Sakit kepala sedang–berat; kaku kuduk; tanpa defisit kecuali paresis saraf kranialis',2],['III — Mengantuk atau bingung, defisit fokal ringan',3],['IV — Stupor, hemiparesis sedang–berat, gangguan vegetatif',4],['V — Koma dalam, postur deserebrasi, moribund',5]])],format:s=>({score:'Grade '+s,interpret:'Derajat klinis SAH; pemeriksaan serial dan kondisi sebelum sedasi penting.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC4759776/'},
-{id:'wfns',cat:'Stroke & Neurointervensi',name:'WFNS SAH Grade',desc:'WFNS didasarkan pada GCS dan defisit motorik fokal; defisit lain tidak menggantikan parameter motorik.',qs:[B('GCS',Array.from({length:13},(_,i)=>[String(i+3),i+3])),Y('Defisit motorik fokal')],compute:v=>{let g=v[0],grade=g===15?1:g>=13?(v[1]?3:2):g>=7?4:5;return {score:'WFNS '+grade,interpret:`GCS ${g}; defisit motorik ${v[1]?'ada':'tidak ada'}. Untuk staging SAH.`}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC4759776/'},
-{id:'mfisher',cat:'Stroke & Neurointervensi',name:'Modified Fisher SAH Scale',desc:'Skala CT SAH berdasarkan ketebalan darah subaraknoid dan ada/tidaknya IVH. Grade 0–4.',qs:[B('Darah subaraknoid',[['Tidak terlihat SAH','none'],['Tipis (<1 mm)','thin'],['Tebal (≥1 mm)','thick']]),Y('Perdarahan intraventrikular (IVH)')],compute:v=>{let s=v[0]==='none'?0:v[0]==='thin'?(v[1]?2:1):(v[1]?4:3);return {score:'Grade '+s,interpret:'Risiko delayed cerebral ischemia harus dinilai dalam konteks klinis, bukan hanya dari grade CT.'}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC5915115/'},
-{id:'thwaites',cat:'Neuroinfeksi',name:'Thwaites Diagnostic Index (TBM vs bakterial)',desc:'Indeks historis untuk diferensiasi TB meningitis dari meningitis bakterial; nilai ≤4 mendukung TBM dalam kohort asal, tidak konfirmatif.',qs:[B('Umur',[['<36 tahun',0],['≥36 tahun',2]]),B('Leukosit darah',[['<15.000/µL',0],['≥15.000/µL',4]]),B('Durasi penyakit',[['<6 hari',0],['≥6 hari',-5]]),B('Leukosit CSF',[['<900/µL',0],['≥900/µL',3]]),B('Neutrofil CSF',[['<75%',0],['≥75%',4]])],format:s=>({score:String(s),interpret:s<=4?'Konsisten dengan TBM menurut ambang derivasi; konfirmasi dan diagnosis banding tetap wajib.':'Lebih mendukung meningitis bakterial menurut ambang derivasi; TBM tidak tersingkir.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC8757633/'},
-{id:'marais',cat:'Neuroinfeksi',name:'Marais TBM — Lancet Consensus',desc:'Definisi kasus TB meningitis untuk penelitian. Perlu gejala meningitis, penyingkiran diagnosis alternatif, status neuroimaging, dan bukti CSF bila ada. Maksimum domain: klinis 6; CSF 4; brain imaging 6; TB ekstraneural 4.',qs:[Y('Gejala/tanda yang kompatibel dengan meningitis'),B('Neuroimaging otak tersedia',[['Ya','yes'],['Tidak','no']]),Y('Bukti definitif M. tuberculosis dalam CSF / biopsi CNS sesuai definisi'),Y('Ada diagnosis alternatif yang lebih mungkin'),Y('Durasi gejala >5 hari',4),Y('Gejala sistemik TB',2),Y('Riwayat kontak TB atau uji TB positif yang memenuhi kriteria',2),Y('Defisit neurologis fokal',1),Y('Paresis saraf kranialis',1),Y('Perubahan kesadaran',1),Y('CSF jernih',1),Y('CSF 10–500 sel/µL',1),Y('Dominasi limfosit >50%',1),Y('Protein CSF >1 g/L',1),Y('Rasio glukosa CSF:plasma <0,5 atau glukosa CSF <2,2 mmol/L',1),Y('Hidrosefalus',1),Y('Enhancement meningeal basal',2),Y('Tuberkuloma otak',2),Y('Infark sesuai CT/MRI',1),Y('Hiperdensitas basal pre-kontras',2),B('Bukti TB ekstraneural terkuat',[['Tidak ada',0],['Foto toraks sugestif TB aktif / imaging TB ekstraneural',2],['Miliary TB / konfirmasi mikrobiologi TB ekstraneural',4]])],compute:v=>{if(!v[0])return {score:'Tidak memenuhi entry criteria',interpret:'Kriteria Marais tidak diterapkan tanpa gejala/tanda meningitis.'};if(v[3])return {score:'Diagnosis alternatif',interpret:'Alternatif yang lebih mungkin harus ditelaah terlebih dahulu.'};let cl=Math.min(6,v.slice(4,10).reduce((a,b)=>a+b,0)),csf=Math.min(4,v.slice(10,15).reduce((a,b)=>a+b,0)),img=Math.min(6,v.slice(15,20).reduce((a,b)=>a+b,0)),ex=v[20],total=cl+csf+(v[1]==='yes'?img:0)+ex;let grade=v[2]?'Definite TBM (bukti mikrobiologi/histologi)':(csf+(v[1]==='yes'?img:0)<2?'Tidak memenuhi syarat minimal CSF/imaging untuk probable TBM':total>=(v[1]==='yes'?12:10)?'Probable TBM':total>=6?'Possible TBM':'Belum memenuhi ambang possible TBM');return {score:total+' poin — '+grade,interpret:'Klasifikasi riset; bukan pengganti keputusan diagnostik dan terapi empiris.',detail:`Klinis ${cl}/6; CSF ${csf}/4; imaging ${v[1]==='yes'?img+'/6':'tidak tersedia'}; TB ekstraneural ${ex}/4`}},ref:'https://academic.oup.com/cid/article/64/4/501/2525939'},
-{id:'egris',cat:'GBS & Neuromuskular',name:'EGRIS — Respiratory Insufficiency',desc:'Prediksi kebutuhan ventilasi mekanik dalam minggu pertama GBS berdasarkan kondisi saat admisi. Skor 0–7.',qs:[B('Onset kelemahan sampai masuk RS',[['>7 hari',0],['4–7 hari',1],['≤3 hari',2]]),Y('Kelemahan wajah dan/atau bulbar'),B('MRC Sum Score saat admisi',[['51–60',0],['41–50',1],['31–40',2],['21–30',3],['0–20',4]])],format:s=>({score:s+'/7',interpret:s<=2?'Kelompok risiko rendah':s<=4?'Kelompok risiko sedang':'Kelompok risiko tinggi',detail:'Tidak menggantikan pemantauan FVC, bulbar, respirasi, atau keputusan ICU.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9306880/'},
-{id:'megos',cat:'GBS & Neuromuskular',name:'mEGOS — Modified Erasmus GBS Outcome',desc:'Prediksi ketidakmampuan berjalan mandiri; gunakan MRC pada admisi atau hari ke-7. Skor tidak sama di kedua waktu.',qs:[B('Waktu penilaian',[['Saat admisi','admission'],['Hari ke-7','day7']]),B('Usia',[['≤40 tahun',0],['41–60 tahun',1],['>60 tahun',2]]),Y('Didahului diare'),B('MRC Sum Score',[['51–60','high'],['41–50','mid'],['31–40','low'],['≤30','lowest']])],compute:v=>{let i=['high','mid','low','lowest'].indexOf(v[3]);let p=(v[0]==='admission'?[0,2,4,6]:[0,3,6,9])[i],s=p+v[1]+v[2];return {score:s+'/'+(v[0]==='admission'?9:12),interpret:'Nilai lebih tinggi mencerminkan risiko outcome ambulasi buruk lebih besar; probabilitas harus dipetakan dengan grafik model tervalidasi.',detail:'Waktu: '+(v[0]==='admission'?'admisi':'hari ke-7')}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC10241707/'},
-{id:'megris',cat:'GBS & Neuromuskular',name:'mEGRIS — Structured Assessment',desc:'mEGRIS adalah model prognostik berbasis kalibrasi; versi ini adalah lembar pengumpulan variabel, BUKAN kalkulator probabilitas dan tidak mengarang konversi skor EGRIS menjadi mEGRIS.',qs:[B('Onset kelemahan sampai admisi',[['≤3 hari','le3'],['4–7 hari','4to7'],['>7 hari','gt7']]),Y('Kelemahan bulbar'),Y('Kelemahan wajah'),B('MRC Sum Score saat admisi',[['51–60','51to60'],['41–50','41to50'],['31–40','31to40'],['21–30','21to30'],['0–20','0to20']])],compute:v=>({score:'Asesmen lengkap',interpret:'Parameter terisi. Perkiraan risiko mEGRIS tidak tersedia dalam versi ini sampai kalkulasi model spesifik tervalidasi.',detail:`Onset ${v[0]}, bulbar ${v[1]?'ya':'tidak'}, wajah ${v[2]?'ya':'tidak'}, MRC ${v[3]}`}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC9306880/'},
-{id:'tokuhashi',cat:'Neuroonkologi',name:'Revised Tokuhashi — Spinal Metastases',desc:'Enam faktor, total 0–15. Prognosis berdasarkan model historis; terapi modern dapat mengubah estimasi survival.',qs:[B('KPS — kondisi umum',[['10–40 (buruk)',0],['50–70 (sedang)',1],['80–100 (baik)',2]]),B('Jumlah metastasis tulang ekstraspinal',[['≥3',0],['1–2',1],['0',2]]),B('Jumlah vertebra terkena',[['≥3',0],['2',1],['1',2]]),B('Metastasis organ mayor',[['Tidak dapat direseksi',0],['Dapat direseksi / terapi terarah',1],['Tidak ada',2]]),B('Tumor primer',[['Paru, osteosarkoma, lambung, kandung kemih, esofagus, pankreas',0],['Hati, kandung empedu, primer tidak diketahui',1],['Lainnya',2],['Ginjal, uterus',3],['Rektum',4],['Tiroid, payudara, prostat, karsinoid',5]]),B('Paralisis neurologis',[['Komplet (Frankel A–B)',0],['Inkomplet (Frankel C–D)',1],['Tidak ada defisit (Frankel E)',2]])],format:s=>({score:s+'/15',interpret:s<=8?'Kelompok historis: prediksi survival <6 bulan':s<=11?'Kelompok historis: prediksi survival ≥6 bulan':'Kelompok historis: prediksi survival ≥1 tahun',detail:'Jangan gunakan estimasi survival ini sebagai satu-satunya dasar keputusan operasi.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC6698555/'},
-{id:'tomita',cat:'Neuroonkologi',name:'Tomita Prognostic Score',desc:'Skor historis 2–10 berdasarkan pertumbuhan primer, metastasis visceral, dan metastasis tulang; pemilihan tindakan perlu penilaian multidisiplin.',qs:[B('Pertumbuhan tumor primer',[['Lambat (mis. tiroid/payudara)',1],['Sedang (mis. ginjal/uterus)',2],['Cepat (mis. paru/lambung)',4]]),B('Metastasis visceral',[['Tidak ada',0],['Dapat diobati',2],['Tidak dapat diobati',4]]),B('Metastasis tulang',[['Soliter/terisolasi',1],['Multipel',2]])],format:s=>({score:s+'/10',interpret:s<=3?'Kelompok prognosis historis lebih baik':s<=5?'Kelompok prognosis menengah':s<=7?'Kelompok prognosis kurang baik':'Kelompok prognosis buruk',detail:'Interpretasi kategori historis; jangan menyimpulkan angka survival pasti dari skor ini.'}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC6698555/'},
-{id:'noms',cat:'Neuroonkologi',name:'NOMS — Framework Spinal Metastasis',desc:'Kerangka keputusan multidisiplin (Neurologic, Oncologic, Mechanical, Systemic); bukan skor penjumlahan maupun rekomendasi operasi otomatis.',qs:[B('Neurologic: ESCC',[['Low-grade (0–1c)','low'],['High-grade (2–3)','high'],['Tidak dapat dinilai','unknown']]),B('Oncologic: radiosensitivitas / pilihan lokal',[['Peka terapi radiasi konvensional','radio'],['Relatif radioresisten atau membutuhkan stereotactic RT','resist'],['Belum diketahui','unknown']]),B('Mechanical: stabilitas berdasarkan SINS',[['Stabil (0–6)','stable'],['Potentially unstable (7–12)','potential'],['Unstable (13–18)','unstable'],['Tidak dinilai','unknown']]),B('Systemic: kemampuan toleransi terapi',[['Memungkinkan terapi lokal/invasif','fit'],['Terbatas akibat kondisi sistemik','limited'],['Belum dinilai','unknown']])],compute:v=>({score:'NOMS terisi',interpret:(v[0]==='high'||v[2]==='unstable')?'Temuan berisiko tinggi: prioritaskan evaluasi MSCC/spinal multidisciplinary sesuai urgensi.':'Gunakan keempat domain untuk diskusi multidisiplin; tidak ada rekomendasi intervensi otomatis.',detail:`N ${v[0]}; O ${v[1]}; M ${v[2]}; S ${v[3]}`}),ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC4063402/'},
-{id:'kps',cat:'Neuroonkologi',name:'Karnofsky Performance Status (KPS)',desc:'Kondisi fungsional 0–100 dengan kelipatan 10, pilih deskripsi yang paling tepat.',qs:[B('Performance status',[['100 — Normal, tidak ada keluhan',100],['90 — Aktivitas normal, tanda/gejala minor',90],['80 — Aktivitas normal dengan upaya, beberapa gejala',80],['70 — Mengurus diri; tidak mampu kerja normal',70],['60 — Butuh bantuan sesekali',60],['50 — Butuh bantuan berarti dan perawatan medis sering',50],['40 — Disabilitas, butuh perawatan khusus',40],['30 — Disabilitas berat; hospitalisasi diindikasikan',30],['20 — Sangat sakit; perawatan suportif aktif',20],['10 — Moribund',10],['0 — Meninggal',0]])],format:s=>({score:s+'/100',interpret:'KPS performance status; nilai lebih tinggi menunjukkan fungsi lebih baik.'}),ref:'https://www.cancer.gov/publications/dictionaries/cancer-terms/def/karnofsky-performance-status'},
-{id:'ecog',cat:'Neuroonkologi',name:'ECOG Performance Status',desc:'Status fungsional 0–5 menurut ECOG.',qs:[B('ECOG PS',[['0 — Aktif sepenuhnya',0],['1 — Aktivitas berat terbatas, ambulasi dan kerja ringan',1],['2 — Mandiri merawat diri, tidak mampu bekerja; bangun >50% jam terjaga',2],['3 — Terbatas merawat diri; di kursi/tempat tidur >50% jam terjaga',3],['4 — Sepenuhnya tidak mampu; terbaring total',4],['5 — Meninggal',5]])],format:s=>({score:String(s),interpret:'Performance status ECOG '+s}),ref:'https://ecog-acrin.org/resources/ecog-performance-status/'},
-{id:'vas',cat:'Nyeri',name:'Visual Analogue Scale (VAS)',desc:'Pengukuran garis VAS 0–100 mm. Pilih posisi pada garis secara numerik (dalam mm) sesuai pelaporan pasien.',qs:[B('VAS (mm) — 0 tidak nyeri, 100 nyeri terberat',Array.from({length:101},(_,i)=>[i+' mm',i]))],format:s=>({score:s+'/100 mm',interpret:'VAS merupakan ukuran kontinyu intensitas nyeri; penilaian perubahannya perlu mempertimbangkan kondisi dan konteks klinis.'}),ref:'https://www.iasp-pain.org/resources/fact-sheets/pain-assessment/'},
-{id:'rano',cat:'Neuroonkologi',name:'RANO 2.0 — Glioma Response Assessment (2D)',desc:'Worksheet berbasis perubahan jumlah produk diameter tegak lurus lesi target. Bukan penetapan otomatis CR/PR/PD, karena status steroid, new lesion, konfirmasi ≥4 minggu, jenis tumor, dan waktu pasca-radiasi juga menentukan.',qs:[B('Jenis pengukuran',[['Enhancing glioma (CE)','ce'],['Non-enhancing glioma','non']]),B('Perubahan sum of products area dibanding baseline (PR) / nadir (PD)',[['Penurunan ≥50%','decrease50'],['Penurunan 25–<50%','decrease25'],['Stabil / perubahan di antara cutoff','stable'],['Kenaikan ≥25% dibanding nadir','increase25']]),Y('Lesi baru terukur / leptomeningeal disease'),B('Status steroid dibanding baseline',[['Tidak memakai / stabil / berkurang','stable'],['Meningkat','increased'],['Belum diketahui','unknown']]),B('Kondisi klinis',[['Stabil atau membaik','stable'],['Memburuk karena tumor','worse'],['Belum diketahui','unknown']]),B('Respons radiologis telah dikonfirmasi ≥4 minggu',[['Ya','yes'],['Belum','no']])],compute:v=>{let msg=v[4]==='worse'?'Kemungkinan progresi klinis terkait tumor.':v[2]?'Lesi baru: perlu pembandingan lesi terukur dan kriteria progresi.':v[1]==='increase25'?'Memenuhi ambang radiologis peningkatan beban tumor 2D; konfirmasi bergantung konteks.':v[1]==='decrease50'?'Memenuhi ambang radiologis untuk PR jika syarat steroid/klinis/konfirmasi terpenuhi.':v[1]==='decrease25'&&v[0]==='non'?'Rentang minor response radiologis untuk penyakit nonenhancing.':'Tidak memenuhi ambang radiologis PR/PD berdasarkan pilihan ini.';return {score:'Worksheet RANO 2.0',interpret:msg+' Klasifikasi final harus ditinjau oleh tim neuroonkologi.',detail:`Steroid ${v[3]}, klinis ${v[4]}, konfirmasi ${v[5]}`}},ref:'https://pmc.ncbi.nlm.nih.gov/articles/PMC10860967/'}
-);
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .col-span-2 { grid-column: span 2; }
+    .col-span-3 { grid-column: span 3; }
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      padding: 7px 9px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 16px !important;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+    }
+    .res-box {
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.82rem;
+      margin-top: 8px;
+    }
+    .res-blue { background: #f0f9ff; border: 1px solid #bae6fd; color: #0c4a6e; }
+    .res-amber { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+    .res-emerald { background: #ecfdf5; border: 1px solid #a7f3d0; color: #064e3b; }
+    .res-rose { background: #fff1f2; border: 1px solid #fecdd3; color: #881337; }
+    .res-purple { background: #faf5ff; border: 1px solid #e9d5ff; color: #581c87; }
+    .res-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+      gap: 8px;
+    }
+    .res-divider {
+      border-top: 1px dashed rgba(0,0,0,0.15);
+      margin: 6px 0;
+      padding-top: 6px;
+    }
+    .copy-btn {
+      margin-top: 8px;
+      background: #0f172a;
+      color: #fff;
+      border: none;
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .copy-btn:active { transform: scale(0.98); background: #334155; }
+    .note-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      color: #334155;
+      margin-top: 10px;
+    }
+    .note-box ul, .note-box ol { padding-left: 16px; margin-top: 4px; }
+    .note-box li { margin-bottom: 3px; }
+    .hidden { display: none !important; }
 
-const planned=['FAST-ED','LAMS','NIHSS','FUNC Score','INCAT','R-ODS','ODI','NDI','LANSS','BPI','MIDAS','HIT-6'];
-let active='gcs', vals={};const nav=document.getElementById('nav'),content=document.getElementById('content');document.getElementById('catalog').innerHTML=planned.map(s=>`<span class="chip todo">${s} • direncanakan</span>`).join('');
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function renderNav(){let query=document.getElementById('search').value.toLowerCase();let last='';nav.innerHTML=defs.filter(d=>`${d.name} ${d.cat}`.toLowerCase().includes(query)).map(d=>{let h='';if(d.cat!==last){h=`<div class="category">${escapeHtml(d.cat)}</div>`;last=d.cat}return h+`<button class="navitem ${d.id===active?'active':''}" data-id="${d.id}">${escapeHtml(d.name)}</button>`}).join('')||'<p class="muted">Tidak ditemukan</p>';nav.querySelectorAll('button').forEach(b=>b.onclick=()=>{active=b.dataset.id;renderNav();render()})}
-function getVals(d){return d.qs.map((q,i)=>vals[d.id+'-'+i])}function compute(d){let v=getVals(d);if(v.some(x=>x===undefined))return null;return d.compute?d.compute(v):d.format(v.reduce((a,b)=>a+Number(b),0),v)}function renderResult(d){let result=document.getElementById('result'),r=compute(d);if(!r){let done=getVals(d).filter(x=>x!==undefined).length;result.className='result incomplete';result.innerHTML=`<strong>Belum lengkap</strong><p>Terisi ${done}/${d.qs.length} komponen. Semua komponen wajib diisi sebelum menghasilkan skor.</p>`;return}result.className='result';result.innerHTML=`<strong>${escapeHtml(r.score)}</strong><p>${escapeHtml(r.interpret)}</p>${r.detail?`<p class="muted">${escapeHtml(r.detail)}</p>`:''}`}
-function render(){let d=defs.find(d=>d.id===active);content.innerHTML=`<div class="badge">Kalkulator aktif • ${escapeHtml(d.cat)}</div><h2>${escapeHtml(d.name)}</h2><p class="description">${escapeHtml(d.desc)}</p><div id="questions"></div><div id="result" class="result"></div><div class="actions"><button id="copy" class="btn">Salin hasil</button><button id="reset" class="btn secondary">Reset</button><button id="print" class="btn secondary">Cetak</button></div><div class="warning"><strong>Keselamatan klinis:</strong> hasil ini alat bantu, bukan penetapan diagnosis atau indikasi terapi otomatis. Periksa kembali hasil, konteks klinis, versi skor, dan kebijakan RS. Untuk kecurigaan stroke akut atau kompresi medula spinalis, jangan menunda alur kegawatdaruratan karena skoring.</div><div class="refs">Sumber instrumen: <a target="_blank" rel="noopener" href="${d.ref}">${escapeHtml(d.ref)}</a></div>`;let qbox=document.getElementById('questions');d.qs.forEach((q,i)=>{let box=document.createElement('div');box.className='question';let label=document.createElement('label');label.textContent=`${i+1}. ${q.name}`;label.htmlFor='q'+i;let s=document.createElement('select');s.id='q'+i;let opt=document.createElement('option');opt.textContent='— Pilih jawaban —';opt.value='';s.appendChild(opt);q.opts.forEach(([name,value])=>{let op=document.createElement('option');op.value=String(value);op.textContent=name;s.appendChild(op)});let prev=vals[d.id+'-'+i];if(prev!==undefined)s.value=String(prev);s.onchange=()=>{let k=d.id+'-'+i;if(s.value==='')delete vals[k];else vals[k]=isNaN(Number(s.value))?s.value:Number(s.value);renderResult(d)};box.append(label,s);if(q.help){let help=document.createElement('div');help.className='help';help.textContent=q.help;box.appendChild(help)}qbox.appendChild(box)});renderResult(d);document.getElementById('reset').onclick=()=>{d.qs.forEach((_,i)=>delete vals[d.id+'-'+i]);render()};document.getElementById('print').onclick=()=>window.print();document.getElementById('copy').onclick=async()=>{let r=compute(d);if(!r)return alert('Isi semua komponen terlebih dahulu.');let t=`NeuroScore — ${d.name}\nHasil: ${r.score}\nInterpretasi: ${r.interpret}${r.detail?'\n'+r.detail:''}\nPerlu verifikasi klinis.`;try{await navigator.clipboard.writeText(t);alert('Hasil disalin.')}catch(e){prompt('Salin teks berikut:',t)}}}
-document.getElementById('search').addEventListener('input',renderNav);renderNav();render();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script></body></html>
+    /* Subtabs & Tables */
+    .subtabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+    }
+    .subtab-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .subtab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .table-wrap {
+      max-height: 400px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #1e293b;
+      color: #fff;
+      padding: 8px;
+      text-align: center;
+      z-index: 5;
+    }
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      border-right: 1px solid #f1f5f9;
+      text-align: center;
+    }
+    tr:hover td { background: #e0f2fe; }
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 100;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="header-top">
+        <div class="title-group">
+          <h1>⚕️ Neuro-Clinical, AGD & Electrolyte Calculator Suite</h1>
+          <p>100% Full-Offline Web App (Mac • iPad • Android • Browser)</p>
+        </div>
+        <div class="global-inputs">
+          <label for="globalBB">BB Pasien (kg):</label>
+          <input type="number" id="globalBB" value="60" min="1" max="250" step="1" oninput="syncAll()">
+        </div>
+      </div>
+
+      <div class="nav-tabs">
+        <button onclick="switchTab('tab-na')" id="btn-tab-na" class="tab-btn active">1. Na, BUN/Cr & Osmolalitas</button>
+        <button onclick="switchTab('tab-neuro')" id="btn-tab-neuro" class="tab-btn">2. Manitol & SIADH vs CSWS</button>
+        <button onclick="switchTab('tab-stroke')" id="btn-tab-stroke" class="tab-btn">3. MAP/CPP & Status Epileptikus</button>
+        <button onclick="switchTab('tab-balans')" id="btn-tab-balans" class="tab-btn">4. Balans Cairan & IWL</button>
+        <button onclick="switchTab('tab-elec')" id="btn-tab-elec" class="tab-btn">5. Elektrolit (K, Ca, Mg, PO4)</button>
+        <button onclick="switchTab('tab-agd')" id="btn-tab-agd" class="tab-btn">6. AGD, Oksigenasi & ARDS</button>
+        <button onclick="switchTab('tab-drip')" id="btn-tab-drip" class="tab-btn">7. Tabel & Kalkulator Drip</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <p style="margin-top:12px"><a href="neuroscore.html" style="color:#075985;font-weight:700">→ Buka NeuroScore Clinical v2 (skoring neurologi)</a></p>
+    <div class="note-box" role="note" style="margin-top:12px;border-color:#f59e0b;background:#fffbeb">
+       <strong>PERHATIAN — Prototipe edukasi:</strong> Kalkulator dosis, infus dan koreksi elektrolit pada berkas sumber belum diaudit secara klinis. Jangan gunakan angka otomatis untuk meresepkan obat atau menentukan kecepatan infus pasien tanpa verifikasi dengan protokol dan farmasis/DPJP. Angka awal adalah contoh, bukan data pasien.
+    </div>
+
+    <!-- ==================== TAB 1: NATRIUM, UREUM/BUN & OSMOLALITAS ==================== -->
+    <section id="tab-na" class="tab-panel">
+      <div class="grid-2">
+
+        <!-- Hiponatremia -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Koreksi Hiponatremia</h2>
+              <p>Defisit Na = Faktor × BB × (Target Na - Na Terukur)</p>
+            </div>
+            <span class="badge badge-blue">Max 8-10 mEq/24j</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Faktor TBW</label>
+              <select id="hipo_factor" onchange="calcHipoNa()">
+                <option value="0.6">0.6 (Laki Dewasa / Anak)</option>
+                <option value="0.5" selected>0.5 (Wanita Dewasa / Laki Lansia)</option>
+                <option value="0.45">0.45 (Wanita Lansia)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Na Terukur (mmol/L)</label>
+              <input type="number" id="hipo_na" value="115" oninput="calcHipoNa()">
+            </div>
+            <div class="field">
+              <label>Target Na (mmol/L)</label>
+              <input type="number" id="hipo_target" value="125" oninput="calcHipoNa()">
+            </div>
+            <div class="field">
+              <label>Cairan Infus</label>
+              <select id="hipo_fluid" onchange="calcHipoNa()">
+                <option value="513" selected>NS 3% (513 mmol/L)</option>
+                <option value="154">NS 0.9% (154 mmol/L)</option>
+                <option value="130">Ringer Laktat (130 mmol/L)</option>
+                <option value="77">NS 0.45% (77 mmol/L)</option>
+                <option value="34">D5 1/4 NS (34 mmol/L)</option>
+              </select>
+            </div>
+            <div class="field col-span-2">
+              <label>Kecepatan Koreksi (Derajat Gejala)</label>
+              <select id="hipo_rate" onchange="calcHipoNa()">
+                <option value="0.5">Mild (0.5 mEq/L/jam)</option>
+                <option value="1.0" selected>Moderate (1.0 mEq/L/jam)</option>
+                <option value="1.5">Severe (1.5 mEq/L/jam)</option>
+              </select>
+            </div>
+          </div>
+          <div id="hipo_result" class="res-box res-blue"></div>
+          <button class="copy-btn" onclick="copyText('hipo_result', 'Koreksi Hiponatremia')">📋 Salin Hasil untuk SOAP/WA</button>
+        </div>
+
+        <!-- Hipernatremia -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Koreksi Hipernatremia</h2>
+              <p>Water Deficit = TBW × ((Na Terukur / 140) - 1)</p>
+            </div>
+            <span class="badge badge-amber">Max 10 mEq/L/24j</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Faktor TBW</label>
+              <select id="hiper_factor" onchange="calcHiperNa()">
+                <option value="0.6">0.6 (Anak / Laki Dewasa)</option>
+                <option value="0.5" selected>0.5 (Wanita Dewasa / Laki Lansia)</option>
+                <option value="0.45">0.45 (Wanita Lansia)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Na Serum (mmol/L)</label>
+              <input type="number" id="hiper_na" value="165" oninput="calcHiperNa()">
+            </div>
+            <div class="field">
+              <label>Cairan Koreksi</label>
+              <select id="hiper_fluid" onchange="calcHiperNa()">
+                <option value="0" selected>D5% (0 mmol/L)</option>
+                <option value="34">D5 1/4 NS (34 mmol/L)</option>
+                <option value="77">NS 0.45% (77 mmol/L)</option>
+                <option value="130">RL (130 mmol/L)</option>
+                <option value="154">NS 0.9% (154 mmol/L)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Maintenance / IWL (24j)</label>
+              <select id="hiper_iwl" onchange="calcHiperNa()">
+                <option value="1.0" selected>+ 1.0 Liter / 24 jam</option>
+                <option value="1.5">+ 1.5 Liter / 24 jam</option>
+              </select>
+            </div>
+          </div>
+          <div id="hiper_result" class="res-box res-amber"></div>
+          <button class="copy-btn" onclick="copyText('hiper_result', 'Koreksi Hipernatremia')">📋 Salin Hasil untuk SOAP/WA</button>
+        </div>
+
+        <!-- Kalkulator BUN dari Ureum & Rasio BUN/Cr -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator BUN (dari Ureum) & Rasio BUN/Cr</h2>
+              <p>BUN = Ureum (mg/dL) ÷ 2.14 | Evaluasi Pre-Renal vs Renal</p>
+            </div>
+            <span class="badge badge-emerald">Fungsi Ginjal & Hidrasi</span>
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>Ureum Darah (mg/dL)</label>
+              <input type="number" id="urea_val" value="42.8" step="0.1" oninput="calcBunFromUrea()">
+            </div>
+            <div class="field">
+              <label>BUN (mg/dL)</label>
+              <input type="number" id="bun_val" value="20" step="0.1" oninput="calcUreaFromBun()">
+            </div>
+            <div class="field">
+              <label>Kreatinin (mg/dL)</label>
+              <input type="number" id="cr_val" value="1.0" step="0.1" oninput="calcRenalRatio()">
+            </div>
+          </div>
+          <div id="bun_result" class="res-box res-emerald"></div>
+          <button class="copy-btn" onclick="copyText('bun_result', 'Evaluasi Ureum/BUN & Kreatinin')">📋 Salin Hasil</button>
+        </div>
+
+        <!-- Osmolalitas Serum -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Osmolalitas Serum</h2>
+              <p>Rumus: 2 × (Na + K) + (BUN / 2.8) + (Glukosa / 18)</p>
+            </div>
+            <span class="badge badge-blue">Normal: 275-295</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Na (mmol/L)</label>
+              <input type="number" id="osm_na" value="140" oninput="calcOsm()">
+            </div>
+            <div class="field">
+              <label>K (mmol/L)</label>
+              <input type="number" id="osm_k" value="4.0" step="0.1" oninput="calcOsm()">
+            </div>
+            <div class="field">
+              <label>BUN (mg/dL) [Otomatis/Manual]</label>
+              <input type="number" id="osm_bun" value="20" step="0.1" oninput="calcOsm()">
+            </div>
+            <div class="field">
+              <label>Glukosa / GDS (mg/dL)</label>
+              <input type="number" id="osm_glu" value="110" oninput="calcOsm()">
+            </div>
+          </div>
+          <div id="osm_result" class="res-box res-blue"></div>
+          <button class="copy-btn" onclick="copyText('osm_result', 'Osmolalitas Serum')">📋 Salin Hasil</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: MANITOL & SIADH vs CSWS ==================== -->
+    <section id="tab-neuro" class="tab-panel hidden">
+      <div class="grid-2">
+
+        <!-- Kalkulator Manitol 20% -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator Dosis Loading & Maintenance Manitol 20%</h2>
+              <p>Konsentrasi Manitol 20% = 20 g / 100 mL (0.2 g/cc = 200 mg/cc)</p>
+            </div>
+            <span class="badge badge-rose">Osmoterapi TIK</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Dosis Loading (g/kgBB)</label>
+              <select id="man_load" onchange="calcMannitol()">
+                <option value="0.5">0.5 g/kgBB (Standar/Moderat)</option>
+                <option value="0.75">0.75 g/kgBB</option>
+                <option value="1.0" selected>1.0 g/kgBB (Herniasi/TIK Berat)</option>
+                <option value="0.25">0.25 g/kgBB (Low Dose)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Dosis Maintenance (g/kgBB)</label>
+              <select id="man_maint" onchange="calcMannitol()">
+                <option value="0.25">0.25 g/kgBB</option>
+                <option value="0.5" selected>0.5 g/kgBB</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Interval Maintenance</label>
+              <select id="man_interval" onchange="calcMannitol()">
+                <option value="4">Tiap 4 Jam (6x/hari)</option>
+                <option value="6" selected>Tiap 6 Jam (4x/hari)</option>
+                <option value="8">Tiap 8 Jam (3x/hari)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Durasi Infus Habis Dalam</label>
+              <select id="man_dur" onchange="calcMannitol()">
+                <option value="15">15 Menit (Bolus Cepat)</option>
+                <option value="20" selected>20 Menit (Standar)</option>
+                <option value="30">30 Menit</option>
+              </select>
+            </div>
+          </div>
+          <div id="man_result" class="res-box res-rose"></div>
+          <button class="copy-btn" onclick="copyText('man_result', 'Regimen Manitol 20%')">📋 Salin Instruksi Manitol</button>
+          <div class="note-box">
+            <strong>Kontraindikasi & Monitoring Manitol:</strong>
+            <ul>
+              <li>Jangan berikan jika <strong>Osmolalitas Serum &gt; 320 mOsm/L</strong>, Anuria/AKI berat, Edema Paru Akut, atau Hipovolemia berat.</li>
+              <li><strong>Contoh Jadwal Tapering Off:</strong> Hari 1–2 (6x atau 4x sehari) → Hari 3 (3x sehari) → Hari 4 (2x sehari) → Stop, untuk mencegah <em>rebound intracranial hypertension</em>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Kalkulator Diferensial SIADH vs CSWS -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator Diferensial SIADH vs CSWS</h2>
+              <p>Hiponatremia pada Pasien Neurologi (Osmolalitas Serum &lt; 275 &amp; Osm Urin &gt; 100)</p>
+            </div>
+            <span class="badge badge-blue">Neuro-Elektrolit</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Status Volume & Tanda Dehidrasi</label>
+              <select id="sc_vol" onchange="calcSiadhCsws()">
+                <option value="eu">Euvolemik / Hipervolemik Ringan (Turgor N, Mukosa Basah)</option>
+                <option value="hypo" selected>Hipovolemik (Turgor ↓, Mukosa Kering, Takikardi/Hipotensi)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Balans Cairan & Produksi Urin</label>
+              <select id="sc_bal" onchange="calcSiadhCsws()">
+                <option value="pos">Balans Netral/Positif, Urin Normal/Rendah (&lt; 2-3 cc/kg/jam)</option>
+                <option value="neg" selected>Balans Negatif, Poliuria (&gt; 3 cc/kg/jam)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>CVP (Central Venous Pressure)</label>
+              <select id="sc_cvp" onchange="calcSiadhCsws()">
+                <option value="0">Belum Diukur / Tidak Ada CVC</option>
+                <option value="norm">Normal / Meningkat (6 – 12 cmH2O)</option>
+                <option value="low" selected>Rendah (&lt; 5 – 6 cmH2O)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Natrium Urin (mmol/L)</label>
+              <select id="sc_una" onchange="calcSiadhCsws()">
+                <option value="mod">20 – 40 mmol/L (Meningkat Moderat)</option>
+                <option value="high" selected>&gt; 40 mmol/L (Sangat Tinggi / Natriuresis Masif)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Tren BUN/Cr & Hematokrit (Hct)</label>
+              <select id="sc_lab" onchange="calcSiadhCsws()">
+                <option value="low">Normal atau Rendah (Hemodilusi)</option>
+                <option value="high" selected>Meningkat (Hemokonsentrasi, BUN/Cr &gt; 20)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Asam Urat Serum & FEUrate Pasca Koreksi</label>
+              <select id="sc_ua" onchange="calcSiadhCsws()">
+                <option value="siadh">Asam Urat ↓, FEUrate Normalisasi setelah Na terkoreksi</option>
+                <option value="csws" selected>Asam Urat ↓, FEUrate Tetap &gt; 11% meski Na terkoreksi</option>
+              </select>
+            </div>
+          </div>
+          <div id="sc_result" class="res-box res-blue"></div>
+          <button class="copy-btn" onclick="copyText('sc_result', 'Evaluasi SIADH vs CSWS')">📋 Salin Analisis SIADH/CSWS</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: MAP/CPP STROKE & STATUS EPILEPTIKUS ==================== -->
+    <section id="tab-stroke" class="tab-panel hidden">
+      <div class="grid-2">
+
+        <!-- Kalkulator MAP, CPP & Target TD Stroke -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator MAP, CPP & Target Tekanan Darah Neurologi</h2>
+              <p>MAP = (SBP + 2×DBP) / 3 | CPP = MAP - ICP (Target CPP Normal: 60–70 mmHg)</p>
+            </div>
+            <span class="badge badge-purple">Neuro-Vascular & ICU</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>TD Sistolik / SBP (mmHg)</label>
+              <input type="number" id="bp_sbp" value="190" oninput="calcMapStroke()">
+            </div>
+            <div class="field">
+              <label>TD Diastolik / DBP (mmHg)</label>
+              <input type="number" id="bp_dbp" value="105" oninput="calcMapStroke()">
+            </div>
+            <div class="field">
+              <label>Estimasi TIK / ICP (mmHg)</label>
+              <input type="number" id="bp_icp" value="15" oninput="calcMapStroke()">
+            </div>
+            <div class="field">
+              <label>Skenario Klinis Neurologi</label>
+              <select id="bp_scenario" onchange="calcMapStroke()">
+                <option value="ais_no">Stroke Iskemik Akut (Non-Trombolisis)</option>
+                <option value="ais_tpa" selected>Stroke Iskemik Akut (Kandidat / Pasca r-tPA)</option>
+                <option value="ich">Perdarahan Intraserebral (ICH Akut)</option>
+                <option value="sah">Perdarahan Subaraknoid (SAH Belum Coiling/Clipping)</option>
+              </select>
+            </div>
+          </div>
+          <div id="bp_result" class="res-box res-purple"></div>
+          <button class="copy-btn" onclick="copyText('bp_result', 'Evaluasi Hemodinamik & Target TD Stroke')">📋 Salin Evaluasi MAP/Stroke</button>
+        </div>
+
+        <!-- Kalkulator Status Epileptikus & Loading Antikonvulsan -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator Status Epileptikus (Phenytoin, Midazolam, Propofol)</h2>
+              <p>Dosis Loading & Maintenance Syringe Pump Berdasarkan Berat Badan</p>
+            </div>
+            <span class="badge badge-rose">Neuro-Emergency</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Dosis Loading Phenytoin (mg/kgBB)</label>
+              <select id="se_phen_dose" onchange="calcSeDrugs()">
+                <option value="15">15 mg/kgBB</option>
+                <option value="18" selected>18 mg/kgBB (Standar SE)</option>
+                <option value="20">20 mg/kgBB (Maksimal Awal)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Kecepatan Infus Phenytoin</label>
+              <select id="se_phen_rate" onchange="calcSeDrugs()">
+                <option value="50" selected>50 mg/menit (Dewasa Standar)</option>
+                <option value="25">25 mg/menit (Lansia / Komorbid Jantung)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Target Drip Midazolam (mg/kg/jam)</label>
+              <input type="number" id="se_mdz_dose" value="0.10" step="0.05" min="0.05" max="0.5" oninput="calcSeDrugs()">
+            </div>
+            <div class="field">
+              <label>Target Drip Propofol (mg/kg/jam)</label>
+              <input type="number" id="se_prop_dose" value="2.0" step="0.5" min="1.0" max="5.0" oninput="calcSeDrugs()">
+            </div>
+          </div>
+          <div id="se_result" class="res-box res-rose"></div>
+          <button class="copy-btn" onclick="copyText('se_result', 'Protokol Dosis Status Epileptikus')">📋 Salin Dosis Antikonvulsan</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: BALANS CAIRAN & IWL ==================== -->
+    <section id="tab-balans" class="tab-panel hidden">
+      <div class="grid-2">
+
+        <!-- Input Cairan Masuk & Keluar -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Kalkulator Balans Cairan, IWL & Diuresis</h2>
+              <p>IWL Normal = (15 × BB × Jam) / 24 | Koreksi Demam: +10% IWL per kenaikan 1°C di atas 37°C</p>
+            </div>
+            <span class="badge badge-emerald">Monitoring HCU/Bangsal</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Durasi Observasi (Jam)</label>
+              <select id="bal_hours" onchange="calcFluidBalance()">
+                <option value="24" selected>24 Jam (Harian)</option>
+                <option value="12">12 Jam (Shift)</option>
+                <option value="8">8 Jam (Shift)</option>
+                <option value="6">6 Jam</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Suhu Tubuh Rata-rata (°C)</label>
+              <input type="number" id="bal_temp" value="37.0" step="0.1" oninput="calcFluidBalance()">
+            </div>
+          </div>
+
+          <p style="font-size:0.78rem; font-weight:700; color:#0284c7; margin: 8px 0 6px;">➕ CAIRAN MASUK (INTAKE dalam cc/mL)</p>
+          <div class="form-grid">
+            <div class="field">
+              <label>Infus Rumatan / Kristaloid / Koloid (cc)</label>
+              <input type="number" id="in_infus" value="1500" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>Drip Obat / Syringe Pump / Manitol (cc)</label>
+              <input type="number" id="in_drip" value="300" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>Minum / NGT / Diet Cair (cc)</label>
+              <input type="number" id="in_oral" value="600" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>Air Metabolisme (Otomatis: 5 cc/kg/24j)</label>
+              <input type="number" id="in_metab" value="300" readonly style="background:#e2e8f0;">
+            </div>
+          </div>
+
+          <p style="font-size:0.78rem; font-weight:700; color:#e11d48; margin: 8px 0 6px;">➖ CAIRAN KELUAR (OUTPUT dalam cc/mL)</p>
+          <div class="form-grid">
+            <div class="field">
+              <label>Produksi Urin Total (cc)</label>
+              <input type="number" id="out_urine" value="1600" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>Residu NGT / Muntah (cc)</label>
+              <input type="number" id="out_ngt" value="0" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>BAB / Diare / Drain / Perdarahan (cc)</label>
+              <input type="number" id="out_other" value="100" oninput="calcFluidBalance()">
+            </div>
+            <div class="field">
+              <label>Konstanta IWL Dasar (cc/kg/24j)</label>
+              <select id="bal_iwl_const" onchange="calcFluidBalance()">
+                <option value="15" selected>15 cc/kgBB/24 jam (Standar)</option>
+                <option value="10">10 cc/kgBB/24 jam (Ventilator/Lansia)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hasil Balans Cairan -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Ringkasan Balans Cairan & Diuresis</h2>
+              <p>Otomatis menghitung IWL Basal, IWL Demam, dan Laju Diuresis (cc/kgBB/jam)</p>
+            </div>
+            <span class="badge badge-blue">Siap Copy ke Rekam Medis</span>
+          </div>
+          <div id="bal_result" class="res-box res-emerald"></div>
+          <button class="copy-btn" onclick="copyText('bal_result', 'Balans Cairan & Diuresis')">📋 Salin Laporan Balans Cairan</button>
+
+          <div class="note-box">
+            <strong>Interpretasi Laju Diuresis (Urine Output):</strong>
+            <ul>
+              <li><strong>Normal Dewasa:</strong> 0.5 – 1.5 cc/kgBB/jam</li>
+              <li><strong>Oliguria:</strong> &lt; 0.5 cc/kgBB/jam (atau &lt; 400 cc/24 jam)</li>
+              <li><strong>Anuria:</strong> &lt; 50 – 100 cc/24 jam</li>
+              <li><strong>Poliuria:</strong> &gt; 2.5 – 3.0 cc/kgBB/jam (Waspada Diabetes Insipidus, CSWS, atau efek diuretik/Manitol)</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: ELEKTROLIT (K, Ca, Mg, PO4) ==================== -->
+    <section id="tab-elec" class="tab-panel hidden">
+      <div class="grid-2">
+
+        <!-- 1. KOREKSI HIPOKALEMIA -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Koreksi Hipokalemia</h2>
+              <p>Daily K (1 mmol/kg) + Defisit K ((Target - K) × BB × 0.3)</p>
+            </div>
+            <span class="badge badge-blue">1 Flacon KCl = 25 mEq</span>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>K Terukur (mmol/L)</label>
+              <input type="number" id="kal_k" value="2.8" step="0.1" oninput="calcKalium()">
+            </div>
+            <div class="field">
+              <label>Target Normal K (mmol/L)</label>
+              <input type="number" id="kal_target" value="4.0" step="0.1" oninput="calcKalium()">
+            </div>
+          </div>
+          <div id="kal_result" class="res-box res-blue"></div>
+          <button class="copy-btn" onclick="copyText('kal_result', 'Koreksi Hipokalemia')">📋 Salin Koreksi Hipokalemia</button>
+
+          <div class="note-box">
+            <strong>Panduan Klinis Hipokalemia:</strong>
+            <ul>
+              <li><strong>Vena Perifer:</strong> Maksimal 10 mEq/jam | <strong>Vena Sentral:</strong> Maksimal 20 mEq/jam</li>
+              <li>Pemberian 40–60 mEq menaikkan K sebesar <strong>1.0–1.5 mEq/L</strong></li>
+              <li>Pemberian 135–160 mEq menaikkan K sebesar <strong>2.5–3.5 mEq/L</strong></li>
+              <li><strong>Oral:</strong> Sandoz-K tab 3x1 (72 mmol/hari) atau KSR 600mg 3x1 (75 mmol/hari)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. PROTOKOL HIPERKALEMIA -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Protokol Penanganan Hiperkalemia</h2>
+              <p>Tata laksana kegawatdaruratan hiperkalemia dan stabilisasi membran miokard</p>
+            </div>
+            <span class="badge badge-rose">Gawat Darurat</span>
+          </div>
+          <div class="note-box" style="background:#fff1f2; border-color:#fecdd3; color:#881337; font-size:0.78rem;">
+            <p><strong>Langkah Tata Laksana Hiperkalemia Akut:</strong></p>
+            <ol style="margin-top:6px; padding-left:16px; line-height:1.5;">
+              <li><strong>Ca Gluconas 10%:</strong> 5–20 mL (1 ampul) IV bolus pelan selama 10–15 menit (untuk stabilisasi membran jantung).</li>
+              <li><strong>Dextrose & Insulin:</strong> D40% 2 flacon + Insulin Rapid 10–20 IU IV bolus (atau D10% 500 cc / D50% 50 cc) — <em>Jika GDS &lt; 230, cek gula darah secara berkala setiap 5–6 jam</em>.</li>
+              <li><strong>Agonis Beta-2 (Nebulisasi):</strong> Salbutamol / Ventolin nebulizer 10–20 mg (atau IV 0.5 mg dalam 100 cc D5%).</li>
+              <li><strong>Binding Resin (Kalitake):</strong> 25–50 gram/hari oral/rektal untuk eliminasi Kalium GI.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- 3. KALSIUM, MAGNESIUM & FOSFAT -->
+        <div class="card col-span-2">
+          <div class="card-header">
+            <div>
+              <h2>Kalsium (Ca), Magnesium (Mg) & Fosfat</h2>
+              <p>Corrected Ca = 0.8 × (Albumin Normal - Albumin Pasien) + Ca Serum</p>
+            </div>
+            <span class="badge badge-amber">Elektrolit Lain</span>
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>Ca Serum (mg/dL)</label>
+              <input type="number" id="ca_val" value="7.5" step="0.1" oninput="calcCa()">
+            </div>
+            <div class="field">
+              <label>Albumin Pasien</label>
+              <input type="number" id="ca_alb" value="2.5" step="0.1" oninput="calcCa()">
+            </div>
+            <div class="field">
+              <label>Albumin Normal</label>
+              <input type="number" id="ca_norm" value="4.0" step="0.1" oninput="calcCa()">
+            </div>
+          </div>
+          <div id="ca_result" class="res-box res-amber"></div>
+
+          <div class="note-box" style="margin-top:10px;">
+            <p><strong>Hipokalsemia Initial:</strong> 1–2 ampul Ca Gluconas dalam 50–100 cc D5% selama 10 menit.</p>
+            <p><strong>Maintenance:</strong> 1–2 gram Ca Gluconas 10% dalam 500 cc D5% selama 30–60 menit, diulang tiap jam (Target Ca = 7–9).</p>
+            <p><strong>Hiperkalsemia:</strong> Furosemide 20–40 mg IV; Kalsitonin 4–8 IU/kgBB SC atau IM; Stop Vitamin D.</p>
+            <div class="res-divider"></div>
+            <p><strong>Hipomagnesemia Ringan (1.3–1.6):</strong> MgSO4 20% 20 mEq dalam 100 cc NS 0.9% selama 2–4 jam (8–10 tpm makro).</p>
+            <p><strong>Hipomagnesemia Sedang (&lt;1.2):</strong> MgSO4 20% 40 mEq dalam 250 cc NS 0.9% selama 2–4 jam (21–42 tpm makro).</p>
+            <p><strong>Hipermagnesemia:</strong> Stop Mg, Furosemide 20–40 mg IV, Ca2+ IV (1g CaCl2 selama 2–5 menit), Dialisis.</p>
+            <div class="res-divider"></div>
+            <p><strong>Hipofosfatemia Ringan (&gt;1.5):</strong> K-fosfat 1–4 g/hari | <strong>Berat (&lt;1.5):</strong> Sodium fosfat IV drip 15 mmol selama 2 jam, diulang 3x24 jam.</p>
+            <p><strong>Hiperfosfatemia:</strong> Tab CaCO3 2–3x 300–500 mg/hari, Dialisis.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: ANALISIS GAS DARAH, OKSIGENASI & ARDS ==================== -->
+    <section id="tab-agd" class="tab-panel hidden">
+      <div class="grid-2">
+
+        <!-- Interpretasi AGD Lengkap & Terapi Alkali -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Analisis Gas Darah (Status Asam-Basa, Kompensasi & AG)</h2>
+              <p>Normal: pH 7.35–7.45 | pCO2 35–45 mmHg | HCO3 22–26 mmol/L | AG 10–14</p>
+            </div>
+            <span class="badge badge-blue">Interpretasi Otomatis</span>
+          </div>
+          <div class="form-grid-3">
+            <div class="field">
+              <label>pH Darah</label>
+              <input type="number" id="agd_ph" value="7.28" step="0.01" oninput="calcAGD()">
+            </div>
+            <div class="field">
+              <label>pCO2 (mmHg)</label>
+              <input type="number" id="agd_pco2" value="30" step="0.5" oninput="syncPco2('agd')">
+            </div>
+            <div class="field">
+              <label>HCO3 Aktual (mmol/L)</label>
+              <input type="number" id="agd_hco3" value="14" step="0.5" oninput="calcAGD()">
+            </div>
+            <div class="field">
+              <label>Base Excess (BE)</label>
+              <input type="number" id="agd_be" value="-11" step="0.5" oninput="calcAGD()">
+            </div>
+            <div class="field">
+              <label>Na (mmol/L)</label>
+              <input type="number" id="agd_na" value="140" oninput="calcAGD()">
+            </div>
+            <div class="field">
+              <label>Cl (mmol/L)</label>
+              <input type="number" id="agd_cl" value="104" oninput="calcAGD()">
+            </div>
+            <div class="field col-span-3">
+              <label>Target HCO3 (Untuk Perhitungan Defisit HCl pada Alkalosis Metabolik)</label>
+              <input type="number" id="agd_target_hco3" value="24" oninput="calcAGD()">
+            </div>
+          </div>
+          <div id="agd_result" class="res-box res-blue"></div>
+          <button class="copy-btn" onclick="copyText('agd_result', 'Analisis Gas Darah & Asam-Basa')">📋 Salin Hasil AGD</button>
+          <div class="note-box">
+            <strong>Manajemen Alkalosis Metabolik:</strong>
+            <ul>
+              <li><strong>Euvolemik / Hipovolemik:</strong> NS 0.9% + koreksi Hipokalemia / Hipokloremia.</li>
+              <li><strong>Hipervolemik:</strong> Acetazolamide 3x250 mg (2–5 hr); IV HCl (150 mEq) dlm NS 0.9% 500 cc habis 8–24 jam (Defisit HCl = 0.5 × BB × ΔHCO3).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Oksigenasi, Alat O2 & Derajat ARDS -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Oksigenasi, Alat O2, P/F Ratio & Derajat ARDS</h2>
+              <p>Pilih modalitas Oksigen (Room Air, NC, Simple Mask, NRBM, Jackson Rees, Ventilator)</p>
+            </div>
+            <span class="badge badge-emerald">Kriteria Berlin ARDS</span>
+          </div>
+          <div class="form-grid">
+            <div class="field col-span-2">
+              <label>Modalitas Oksigen yang Diberikan</label>
+              <select id="ox_device" onchange="onDeviceChange()">
+                <option value="ra">Room Air / Udara Ruangan (FiO2 21%)</option>
+                <option value="nc1">Nasal Kanul 1 Lpm (FiO2 24%)</option>
+                <option value="nc2">Nasal Kanul 2 Lpm (FiO2 28%)</option>
+                <option value="nc3" selected>Nasal Kanul 3 Lpm (FiO2 32%)</option>
+                <option value="nc4">Nasal Kanul 4 Lpm (FiO2 36%)</option>
+                <option value="nc5">Nasal Kanul 5 Lpm (FiO2 40%)</option>
+                <option value="sm5">Simple Mask 5–6 Lpm (FiO2 40%)</option>
+                <option value="sm6">Simple Mask 6–7 Lpm (FiO2 50%)</option>
+                <option value="sm7">Simple Mask 7–8 Lpm (FiO2 60%)</option>
+                <option value="nrbm6">NRBM 6 Lpm (FiO2 60%)</option>
+                <option value="nrbm7">NRBM 7 Lpm (FiO2 70%)</option>
+                <option value="nrbm8">NRBM 8 Lpm (FiO2 80%)</option>
+                <option value="nrbm9">NRBM 9 Lpm (FiO2 90%)</option>
+                <option value="nrbm10">NRBM 10–15 Lpm (FiO2 99%)</option>
+                <option value="jr">Jackson Rees / Bagging 10–15 Lpm (FiO2 100%)</option>
+                <option value="vent">Ventilator Mekanik (Atur FiO2 Manual di Bawah)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>FiO2 Saat BGA (Fraksi 0.21 – 1.00)</label>
+              <input type="number" id="ox_fio2" value="0.32" step="0.01" min="0.21" max="1.0" oninput="calcOxy()">
+            </div>
+            <div class="field">
+              <label>Flow O2 (Lpm) [Utk Konversi NC]</label>
+              <input type="number" id="ox_nc_lpm" value="3" min="0" max="15" oninput="calcOxy()">
+            </div>
+            <div class="field">
+              <label>pO2 BGA (mmHg)</label>
+              <input type="number" id="ox_po2" value="75" oninput="calcOxy()">
+            </div>
+            <div class="field">
+              <label>pCO2 BGA (mmHg)</label>
+              <input type="number" id="ox_pco2" value="30" step="0.5" oninput="syncPco2('ox')">
+            </div>
+          </div>
+          <div id="ox_result" class="res-box res-emerald"></div>
+          <button class="copy-btn" onclick="copyText('ox_result', 'Evaluasi Oksigenasi & Derajat ARDS')">📋 Salin Analisis Oksigenasi & ARDS</button>
+          <div class="note-box">
+            <strong>Klasifikasi Derajat ARDS (Kriteria Berlin, PEEP/CPAP ≥ 5 cmH2O):</strong>
+            <ul>
+              <li><strong>Normal / Non-ARDS:</strong> PaO2/FiO2 (P/F Ratio) &gt; 300 mmHg</li>
+              <li><strong>ARDS Mild (Ringan):</strong> 200 &lt; PaO2/FiO2 ≤ 300 mmHg</li>
+              <li><strong>ARDS Moderate (Sedang):</strong> 100 &lt; PaO2/FiO2 ≤ 200 mmHg</li>
+              <li><strong>ARDS Severe (Berat):</strong> PaO2/FiO2 ≤ 100 mmHg</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 7: TABEL & KALKULATOR DRIP OBAT ==================== -->
+    <section id="tab-drip" class="tab-panel hidden">
+      <div class="card" style="margin-top:16px;">
+        <div class="subtabs">
+          <button onclick="switchDrip('ne100')" id="sub-ne100" class="subtab-btn active">NE Drip (8mg/100cc NS)</button>
+          <button onclick="switchDrip('ne50')" id="sub-ne50" class="subtab-btn">NE Syringe (4mg/50cc)</button>
+          <button onclick="switchDrip('dopa')" id="sub-dopa" class="subtab-btn">Dopamin (200mg/50cc)</button>
+          <button onclick="switchDrip('dobu')" id="sub-dobu" class="subtab-btn">Dobutamin (250mg/50cc)</button>
+          <button onclick="switchDrip('gtn')" id="sub-gtn" class="subtab-btn">GTN (50mg/100cc)</button>
+          <button onclick="switchDrip('nicar')" id="sub-nicar" class="subtab-btn">Nicardipine & Nimodipine</button>
+          <button onclick="switchDrip('other')" id="sub-other" class="subtab-btn">Furosemide / Lanso / Octreotide</button>
+        </div>
+
+        <div id="drip-content"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast">✅ Disalin ke Clipboard!</div>
+
+  <script>
+    let currentDrip = 'ne100';
+
+    function getBB() {
+      return parseFloat(document.getElementById('globalBB').value) || 60;
+    }
+
+    function syncAll() {
+      calcHipoNa();
+      calcHiperNa();
+      calcMannitol();
+      calcMapStroke();
+      calcSeDrugs();
+      calcFluidBalance();
+      calcKalium();
+      calcAGD();
+      calcOxy();
+      renderDripSection();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById('btn-' + tabId).classList.add('active');
+    }
+
+    function switchDrip(dripKey) {
+      currentDrip = dripKey;
+      document.querySelectorAll('.subtab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('sub-' + dripKey).classList.add('active');
+      renderDripSection();
+    }
+
+    async function copyToClipboard(value) {
+      if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(value);
+      const field = document.createElement('textarea');
+      field.value = value;
+      field.style.position = 'fixed'; field.style.opacity='0';
+      document.body.appendChild(field); field.select();
+      let success = document.execCommand('copy'); field.remove();
+      if (!success) throw new Error('Gagal menyalin');
+    }
+
+    function copyText(elementId, title) {
+      const text = document.getElementById(elementId).innerText;
+      const bb = getBB();
+      const fullText = `[${title} - BB ${bb} kg]\n` + text;
+      copyToClipboard(fullText).then(() => {
+        const toast = document.getElementById('toast');
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 2000);
+      }).catch(() => { alert('Salin otomatis tidak tersedia di browser ini. Silakan pilih dan salin hasil secara manual.'); });
+    }
+
+    // ==================== 1. NATRIUM, BUN/CR & OSMOLALITAS ====================
+    function calcHipoNa() {
+      const bb = getBB();
+      const factor = parseFloat(document.getElementById('hipo_factor').value);
+      const na = parseFloat(document.getElementById('hipo_na').value) || 0;
+      const target = parseFloat(document.getElementById('hipo_target').value) || 0;
+      const fluidConc = parseFloat(document.getElementById('hipo_fluid').value);
+      const rate = parseFloat(document.getElementById('hipo_rate').value);
+
+      const deltaNa = Math.max(0, target - na);
+      const deficitNa = factor * bb * deltaNa;
+      const fluidML = (deficitNa / fluidConc) * 1000;
+      const hours = deltaNa > 0 ? (deltaNa / rate) : 0;
+      const ccPerHour = hours > 0 ? (fluidML / hours) : 0;
+      const tpmMikro = ccPerHour;
+      const tpmMakro = ccPerHour / 3;
+
+      document.getElementById('hipo_result').innerHTML = `
+        <div class="res-row"><span>ΔNa (Target - Terukur):</span><strong>${deltaNa.toFixed(1)} mEq/L</strong></div>
+        <div class="res-row"><span>Defisit Natrium:</span><strong>${deficitNa.toFixed(1)} mEq</strong></div>
+        <div class="res-row"><span>Jumlah Cairan Infus:</span><strong>${fluidML.toFixed(0)} cc (${(fluidML/1000).toFixed(2)} L)</strong></div>
+        <div class="res-row"><span>Durasi Pemberian:</span><strong>${hours.toFixed(1)} jam</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>Kecepatan Infus:</span><strong>${ccPerHour.toFixed(1)} cc/jam ≈ ${tpmMikro.toFixed(0)} tpm mikro (${tpmMakro.toFixed(0)} tpm makro)</strong></div>
+      `;
+    }
+
+    function calcHiperNa() {
+      const bb = getBB();
+      const factor = parseFloat(document.getElementById('hiper_factor').value);
+      const na = parseFloat(document.getElementById('hiper_na').value) || 140;
+      const fluidNa = parseFloat(document.getElementById('hiper_fluid').value);
+      const iwl = parseFloat(document.getElementById('hiper_iwl').value);
+
+      const tbw = factor * bb;
+      const waterDeficit = Math.max(0, tbw * ((na / 140) - 1));
+      const deltaNaPerL = (fluidNa - na) / (tbw + 1);
+      const absDelta = Math.abs(deltaNaPerL);
+      const volFor10mEq = absDelta > 0 ? (10 / absDelta) : 0;
+      const total24hL = volFor10mEq + iwl;
+      const rate24h = (total24hL * 1000) / 24;
+
+      document.getElementById('hiper_result').innerHTML = `
+        <div class="res-row"><span>Total Body Water (TBW):</span><strong>${tbw.toFixed(1)} L</strong></div>
+        <div class="res-row"><span>1. Water Deficit:</span><strong>${waterDeficit.toFixed(2)} L (${(waterDeficit*1000).toFixed(0)} cc)</strong></div>
+        <div class="res-row"><span>2. ΔNa per 1L Infus:</span><strong>${deltaNaPerL.toFixed(2)} mmol/L</strong></div>
+        <div class="res-row"><span>3. Vol Infus (Max 10 mEq/24j):</span><strong>${volFor10mEq.toFixed(2)} L (${(volFor10mEq*1000).toFixed(0)} cc)</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>4. Total + IWL (${iwl}L) dlm 24 jam:</span><strong>${total24hL.toFixed(2)} L (${(total24hL*1000).toFixed(0)} cc/24j ≈ ${rate24h.toFixed(0)} cc/jam)</strong></div>
+        <div style="font-size:0.72rem; margin-top:4px;">*Aturan Water Deficit: ½ bagian diberikan dalam 12–24 jam pertama, ½ sisanya diberikan dalam 48 jam.</div>
+      `;
+    }
+
+    function calcBunFromUrea() {
+      const urea = parseFloat(document.getElementById('urea_val').value) || 0;
+      const bun = urea / 2.14;
+      document.getElementById('bun_val').value = bun.toFixed(1);
+      document.getElementById('osm_bun').value = bun.toFixed(1);
+      calcRenalRatio();
+      calcOsm();
+    }
+
+    function calcUreaFromBun() {
+      const bun = parseFloat(document.getElementById('bun_val').value) || 0;
+      const urea = bun * 2.14;
+      document.getElementById('urea_val').value = urea.toFixed(1);
+      document.getElementById('osm_bun').value = bun.toFixed(1);
+      calcRenalRatio();
+      calcOsm();
+    }
+
+    function calcRenalRatio() {
+      const urea = parseFloat(document.getElementById('urea_val').value) || 0;
+      const bun = parseFloat(document.getElementById('bun_val').value) || 0;
+      const cr = parseFloat(document.getElementById('cr_val').value) || 0.1;
+
+      const bunCrRatio = bun / cr;
+      const ureaCrRatio = urea / cr;
+
+      let interp = 'Normal (Rasio BUN/Cr 10 – 20 : 1)';
+      if (bunCrRatio > 20) {
+        interp = 'Meningkat (> 20 : 1) → Sugestif Azotemia Pre-Renal (Dehidrasi/Hipovolemia, Perdarahan GI, atau Katabolisme Tinggi)';
+      } else if (bunCrRatio < 10) {
+        interp = 'Rendah (< 10 : 1) → Sugestif Kerusakan Renal Intrinsik (ATN), Malnutrisi/Low Protein, atau Penyakit Hati Berat';
+      }
+
+      document.getElementById('bun_result').innerHTML = `
+        <div class="res-row"><span>Ureum Darah:</span><strong>${urea.toFixed(1)} mg/dL</strong></div>
+        <div class="res-row"><span>BUN (Ureum ÷ 2.14):</span><strong>${bun.toFixed(1)} mg/dL</strong></div>
+        <div class="res-row"><span>Rasio BUN / Kreatinin:</span><strong>${bunCrRatio.toFixed(1)} : 1 (Rasio Ureum/Cr: ${ureaCrRatio.toFixed(1)})</strong></div>
+        <div class="res-divider"></div>
+        <div><strong>Interpretasi:</strong> ${interp}</div>
+      `;
+    }
+
+    function calcOsm() {
+      const na = parseFloat(document.getElementById('osm_na').value) || 0;
+      const k = parseFloat(document.getElementById('osm_k').value) || 0;
+      const bun = parseFloat(document.getElementById('osm_bun').value) || 0;
+      const glu = parseFloat(document.getElementById('osm_glu').value) || 0;
+
+      const osm = 2 * (na + k) + (bun / 2.8) + (glu / 18);
+      let status = 'ISOTONIC (Normal: 275 - 295 mOsm/L)';
+      if (osm < 275) status = 'HYPOTONIC (< 275 mOsm/L)';
+      else if (osm > 295) status = 'HYPERTONIC (> 295 mOsm/L)';
+
+      const manSafe = osm < 320
+        ? '<span style="color:#065f46; font-weight:700;">✅ Aman untuk pemberian Manitol (&lt; 320 mOsm/L)</span>'
+        : '<span style="color:#9f1239; font-weight:700;">⚠️ KONTRAINDIKASI MANITOL (Osmolalitas ≥ 320 mOsm/L)</span>';
+
+      document.getElementById('osm_result').innerHTML = `
+        <div class="res-row"><span>Osmolalitas Serum:</span><strong style="font-size:1rem;">${osm.toFixed(1)} mOsm/L</strong></div>
+        <div class="res-row"><span>Klasifikasi:</span><strong>${status}</strong></div>
+        <div class="res-divider"></div>
+        <div>${manSafe}</div>
+      `;
+    }
+
+    // ==================== 2. MANITOL & SIADH vs CSWS ====================
+    function calcMannitol() {
+      const bb = getBB();
+      const loadDose = parseFloat(document.getElementById('man_load').value);
+      const maintDose = parseFloat(document.getElementById('man_maint').value);
+      const interval = parseInt(document.getElementById('man_interval').value);
+      const durMin = parseInt(document.getElementById('man_dur').value);
+
+      const loadGram = loadDose * bb;
+      const loadCC = loadGram * 5;
+      const loadTpmMakro = (loadCC * 20) / durMin;
+      const loadCcPerHourPump = (loadCC * 60) / durMin;
+
+      const maintGram = maintDose * bb;
+      const maintCC = maintGram * 5;
+      const maintTpmMakro = (maintCC * 20) / durMin;
+      const freqPerDay = 24 / interval;
+
+      document.getElementById('man_result').innerHTML = `
+        <div class="res-row"><span><strong>1. DOSIS LOADING (${loadDose} g/kgBB):</strong></span><strong>${loadGram.toFixed(1)} gram = ${loadCC.toFixed(0)} cc</strong></div>
+        <div class="res-row"><span>Kecepatan Loading (Habis dlm ${durMin} mnt):</span><strong>${loadTpmMakro.toFixed(0)} tpm makro (${loadCcPerHourPump.toFixed(0)} cc/jam)</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span><strong>2. DOSIS MAINTENANCE (${maintDose} g/kgBB):</strong></span><strong>${maintGram.toFixed(1)} gram = ${maintCC.toFixed(0)} cc</strong></div>
+        <div class="res-row"><span>Jadwal Pemberian:</span><strong>${freqPerDay}x ${maintCC.toFixed(0)} cc (Tiap ${interval} jam)</strong></div>
+        <div class="res-row"><span>Kecepatan Maintenance (Habis ${durMin} mnt):</span><strong>${maintTpmMakro.toFixed(0)} tpm makro</strong></div>
+      `;
+    }
+
+    function calcSiadhCsws() {
+      let cswsScore = 0;
+      let siadhScore = 0;
+
+      if (document.getElementById('sc_vol').value === 'hypo') cswsScore += 2; else siadhScore += 2;
+      if (document.getElementById('sc_bal').value === 'neg') cswsScore += 2; else siadhScore += 2;
+      const cvp = document.getElementById('sc_cvp').value;
+      if (cvp === 'low') cswsScore += 2; else if (cvp === 'norm') siadhScore += 2;
+      if (document.getElementById('sc_una').value === 'high') cswsScore += 1; else siadhScore += 1;
+      if (document.getElementById('sc_lab').value === 'high') cswsScore += 2; else siadhScore += 2;
+      if (document.getElementById('sc_ua').value === 'csws') cswsScore += 1; else siadhScore += 1;
+
+      let verdict = '';
+      let management = '';
+      if (cswsScore > siadhScore) {
+        verdict = `⚡ SANGAT SUGESTIF CSWS (Cerebral Salt Wasting Syndrome) — Skor CSWS ${cswsScore} vs SIADH ${siadhScore}`;
+        management = `
+          • <strong>Prinsip Utama:</strong> Rehidrasi cairan & penggantian Natrium (<strong>JANGAN restriksi cairan</strong> karena dapat memperburuk vasospasme/iskemia serebri).<br>
+          • <strong>Terapi:</strong> Infus NaCl 0.9% atau NaCl 3% (sesuai derajat hiponatremia) untuk mencapai balans cairan positif/euvolemik.<br>
+          • <strong>Adjuvan:</strong> Pertimbangkan <strong>Fludrocortisone</strong> 0.1 – 0.2 mg PO 1–2x/hari jika natriuresis persisten.
+        `;
+      } else {
+        verdict = `💧 SANGAT SUGESTIF SIADH (Syndrome of Inappropriate ADH) — Skor SIADH ${siadhScore} vs CSWS ${cswsScore}`;
+        management = `
+          • <strong>Prinsip Utama:</strong> Hiponatremia euvolemik/hipervolemik akibat retensi air bebas.<br>
+          • <strong>Terapi Lini Pertama:</strong> <strong>Restriksi Cairan</strong> ketat (500 – 1000 cc/24 jam atau 500 cc di bawah produksi urin harian).<br>
+          • <strong>Gejala Berat/Akut:</strong> Berikan NaCl 3% (lihat kalkulator Hiponatremia di Tab 1) ± Furosemide dosis rendah jika overload.
+        `;
+      }
+
+      document.getElementById('sc_result').innerHTML = `
+        <div style="font-weight:700; font-size:0.9rem; margin-bottom:6px;">${verdict}</div>
+        <div class="res-divider"></div>
+        <div style="font-size:0.8rem;">${management}</div>
+      `;
+    }
+
+    // ==================== 3. MAP/CPP STROKE & STATUS EPILEPTIKUS ====================
+    function calcMapStroke() {
+      const sbp = parseFloat(document.getElementById('bp_sbp').value) || 0;
+      const dbp = parseFloat(document.getElementById('bp_dbp').value) || 0;
+      const icp = parseFloat(document.getElementById('bp_icp').value) || 0;
+      const scen = document.getElementById('bp_scenario').value;
+
+      const map = (sbp + (2 * dbp)) / 3;
+      const cpp = map - icp;
+      const pp = sbp - dbp;
+
+      let cppStatus = 'Optimal (60 – 70 mmHg)';
+      if (cpp < 60) cppStatus = '⚠️ RENDAH (< 60 mmHg) — Risiko Iskemia Serebri!';
+      else if (cpp > 70) cppStatus = '⚡ TINGGI (> 70 mmHg)';
+
+      let guide = '';
+      if (scen === 'ais_tpa') {
+        const urgent = (sbp >= 185 || dbp >= 110);
+        guide = `
+          <strong>Target Stroke Iskemik (Kandidat / Terapi r-tPA):</strong><br>
+          • Sebelum r-tPA mulai: TD <strong>HARUS &lt; 185/110 mmHg</strong> (${urgent ? '<span style="color:#9f1239;font-weight:700;">Perlu diturunkan segera dengan Nicardipine IV!</span>' : '<span style="color:#065f46;font-weight:700;">Memenuhi syarat TD r-tPA</span>'}).<br>
+          • Selama &amp; 24 jam pasca r-tPA: Pertahankan TD <strong>&lt; 180/105 mmHg</strong>.
+        `;
+      } else if (scen === 'ais_no') {
+        const urgent = (sbp >= 220 || dbp >= 120);
+        guide = `
+          <strong>Target Stroke Iskemik (Non-Trombolisis):</strong><br>
+          • <em>Permissive Hypertension:</em> Jangan turunkan TD kecuali <strong>SBP ≥ 220 mmHg atau DBP ≥ 120 mmHg</strong>, atau ada komorbid akut.<br>
+          • Status saat ini: ${urgent ? '<strong>Indikasi penurunan TD bertahap ~15% dalam 24 jam pertama</strong> (Target MAP ~' + (map*0.85).toFixed(0) + ' mmHg).' : '<strong>Pertahankan perfusi serebral (Observasi tanpa antihipertensi IV agresif).</strong>'}
+        `;
+      } else if (scen === 'ich') {
+        guide = `
+          <strong>Target Perdarahan Intraserebral (ICH Akut):</strong><br>
+          • Jika SBP 150–220 mmHg: Turunkan SBP secara halus ke target <strong>140 mmHg (Rentang 130–150 mmHg)</strong> untuk mencegah ekspansi hematoma.<br>
+          • Hindari penurunan SBP &gt; 60 mmHg dalam 1 jam pertama atau SBP &lt; 130 mmHg.
+        `;
+      } else if (scen === 'sah') {
+        guide = `
+          <strong>Target Perdarahan Subaraknoid (SAH Akut Pre-Obliterasi Aneurisma):</strong><br>
+          • Turunkan SBP ke <strong>&lt; 160 mmHg</strong> (atau MAP &lt; 110 mmHg) dengan Nicardipine IV untuk mencegah <em>rebleeding</em>.<br>
+          • Berikan <strong>Nimodipine</strong> 6x60 mg PO/NGT untuk profilaksis vasospasme / <em>Delayed Cerebral Ischemia (DCI)</em>.
+        `;
+      }
+
+      document.getElementById('bp_result').innerHTML = `
+        <div class="res-row"><span><strong>Mean Arterial Pressure (MAP):</strong></span><strong style="font-size:0.98rem;">${map.toFixed(1)} mmHg (Pulse Pressure: ${pp} mmHg)</strong></div>
+        <div class="res-row"><span><strong>Cerebral Perfusion Pressure (CPP = MAP - ICP):</strong></span><strong>${cpp.toFixed(1)} mmHg (${cppStatus})</strong></div>
+        <div class="res-divider"></div>
+        <div style="font-size:0.79rem;">${guide}</div>
+      `;
+    }
+
+    function calcSeDrugs() {
+      const bb = getBB();
+      const phenDose = parseFloat(document.getElementById('se_phen_dose').value) || 18;
+      const phenRate = parseFloat(document.getElementById('se_phen_rate').value) || 50;
+      const mdzDose = parseFloat(document.getElementById('se_mdz_dose').value) || 0.1;
+      const propDose = parseFloat(document.getElementById('se_prop_dose').value) || 2.0;
+
+      const totalPhenMg = phenDose * bb;
+      const phenAmp = totalPhenMg / 100;
+      const phenMinDuration = totalPhenMg / phenRate;
+
+      const mdzBolusMg = 0.2 * bb;
+      const mdzMgPerHour = mdzDose * bb;
+      const mdzCcPerHour = mdzMgPerHour / 1.0;
+
+      const propBolusMg = 1.5 * bb;
+      const propMgPerHour = propDose * bb;
+      const propCcPerHour = propMgPerHour / 10.0;
+
+      document.getElementById('se_result').innerHTML = `
+        <div class="res-row"><span><strong>1. LOADING PHENYTOIN (${phenDose} mg/kgBB):</strong></span><strong>${totalPhenMg.toFixed(0)} mg (≈ ${phenAmp.toFixed(1)} ampul @100mg)</strong></div>
+        <div class="res-row"><span>Pengenceran &amp; Durasi Minimal (Max ${phenRate} mg/mnt):</span><strong>Dlm 100 cc NS 0.9% habis minimal ${phenMinDuration.toFixed(0)} menit</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span><strong>2. MIDAZOLAM RSE (Jika 50 mg dlm 50 cc = 1 mg/cc):</strong></span><strong>Bolus ${(0.1*bb).toFixed(0)}–${mdzBolusMg.toFixed(0)} mg IV</strong></div>
+        <div class="res-row"><span>Drip Maintenance (${mdzDose.toFixed(2)} mg/kg/jam):</span><strong>${mdzMgPerHour.toFixed(1)} mg/jam = ${mdzCcPerHour.toFixed(1)} cc/jam</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span><strong>3. PROPOFOL 1% MURNI (10 mg/cc):</strong></span><strong>Bolus ${propBolusMg.toFixed(0)} mg (${(propBolusMg/10).toFixed(1)} cc) IV</strong></div>
+        <div class="res-row"><span>Drip Maintenance (${propDose.toFixed(1)} mg/kg/jam):</span><strong>${propMgPerHour.toFixed(0)} mg/jam = ${propCcPerHour.toFixed(1)} cc/jam</strong></div>
+      `;
+    }
+
+    // ==================== 4. BALANS CAIRAN & IWL ====================
+    function calcFluidBalance() {
+      const bb = getBB();
+      const hours = parseFloat(document.getElementById('bal_hours').value) || 24;
+      const temp = parseFloat(document.getElementById('bal_temp').value) || 37.0;
+      const iwlConst = parseFloat(document.getElementById('bal_iwl_const').value) || 15;
+
+      const airMetab = 5 * bb * (hours / 24);
+      document.getElementById('in_metab').value = airMetab.toFixed(0);
+
+      const inInfus = parseFloat(document.getElementById('in_infus').value) || 0;
+      const inDrip = parseFloat(document.getElementById('in_drip').value) || 0;
+      const inOral = parseFloat(document.getElementById('in_oral').value) || 0;
+      const totalIntake = inInfus + inDrip + inOral + airMetab;
+
+      const outUrine = parseFloat(document.getElementById('out_urine').value) || 0;
+      const outNgt = parseFloat(document.getElementById('out_ngt').value) || 0;
+      const outOther = parseFloat(document.getElementById('out_other').value) || 0;
+
+      const iwlBasal = (iwlConst * bb * hours) / 24;
+      const deltaTemp = Math.max(0, temp - 37.0);
+      const iwlFever = iwlBasal * (0.10 * deltaTemp);
+      const totalIwl = iwlBasal + iwlFever;
+
+      const totalOutput = outUrine + outNgt + outOther + totalIwl;
+      const balance = totalIntake - totalOutput;
+      const diuresis = outUrine / bb / hours;
+
+      let diuresisStatus = 'Normal (0.5 - 1.5 cc/kg/jam)';
+      if (diuresis < 0.5) diuresisStatus = '⚠️ OLIGURIA (< 0.5 cc/kg/jam)';
+      else if (diuresis > 2.5) diuresisStatus = '⚡ POLIURIA (> 2.5 cc/kg/jam)';
+
+      const sign = balance >= 0 ? '+' : '';
+
+      document.getElementById('bal_result').innerHTML = `
+        <div class="res-row"><span>Total Cairan Masuk (Intake ${hours} jam):</span><strong>${totalIntake.toFixed(0)} cc</strong></div>
+        <div class="res-row" style="font-size:0.75rem; color:#475569;"><span>(Infus ${inInfus} + Drip ${inDrip} + Enteral ${inOral} + Air Metab ${airMetab.toFixed(0)} cc)</span></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>IWL Basal (${hours} jam):</span><strong>${iwlBasal.toFixed(0)} cc</strong></div>
+        <div class="res-row"><span>Tambahan IWL Demam (Suhu ${temp.toFixed(1)}°C):</span><strong>+${iwlFever.toFixed(0)} cc</strong></div>
+        <div class="res-row"><span>Total IWL:</span><strong>${totalIwl.toFixed(0)} cc</strong></div>
+        <div class="res-row"><span>Total Cairan Keluar (Urin ${outUrine} + Ekstra ${outNgt+outOther} + IWL):</span><strong>${totalOutput.toFixed(0)} cc</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row" style="font-size:0.95rem;"><span><strong>BALANS CAIRAN (${hours} JAM):</strong></span><strong>${sign}${balance.toFixed(0)} cc</strong></div>
+        <div class="res-row" style="font-size:0.9rem;"><span><strong>LAJU DIURESIS:</strong></span><strong>${diuresis.toFixed(2)} cc/kgBB/jam (${diuresisStatus})</strong></div>
+      `;
+    }
+
+    // ==================== 5. ELEKTROLIT (K, Ca, Mg, PO4) ====================
+    function calcKalium() {
+      const bb = getBB();
+      const k = parseFloat(document.getElementById('kal_k').value) || 0;
+      const target = parseFloat(document.getElementById('kal_target').value) || 4.0;
+
+      const dailyK = 1 * bb; // 1 mmol/kg
+      const deficitK = Math.max(0, (target - k) * bb * 0.3); // Menggunakan faktor 0.3 sesuai PDF
+      const totalK = dailyK + deficitK;
+      const flacons = totalK / 25;
+
+      document.getElementById('kal_result').innerHTML = `
+        <div class="res-row"><span>1. Daily Kalium (1 mmol/kgBB):</span><strong>${dailyK.toFixed(0)} mEq</strong></div>
+        <div class="res-row"><span>2. Defisit Kalium ((Target - K) × BB × 0.3):</span><strong>${deficitK.toFixed(1)} mEq</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span><strong>3. Total Kebutuhan K (24 Jam):</strong></span><strong>${totalK.toFixed(1)} mEq (≈ ${flacons.toFixed(1)} flacon KCl)</strong></div>
+      `;
+    }
+
+    function calcCa() {
+      const ca = parseFloat(document.getElementById('ca_val').value) || 0;
+      const alb = parseFloat(document.getElementById('ca_alb').value) || 0;
+      const norm = parseFloat(document.getElementById('ca_norm').value) || 4.0;
+      const corr = 0.8 * (norm - alb) + ca;
+      document.getElementById('ca_result').innerHTML = `
+        <div class="res-row"><span><strong>Corrected Calcium:</strong></span><strong style="font-size:0.95rem;">${corr.toFixed(2)} mg/dL</strong></div>
+      `;
+    }
+
+    // ==================== 6. ANALISIS GAS DARAH, OKSIGENASI & ARDS ====================
+    function syncPco2(source) {
+      if (source === 'agd') {
+        document.getElementById('ox_pco2').value = document.getElementById('agd_pco2').value;
+      } else {
+        document.getElementById('agd_pco2').value = document.getElementById('ox_pco2').value;
+      }
+      calcAGD();
+      calcOxy();
+    }
+
+    function onDeviceChange() {
+      const dev = document.getElementById('ox_device').value;
+      const fio2Input = document.getElementById('ox_fio2');
+      const lpmInput = document.getElementById('ox_nc_lpm');
+
+      const mapDevice = {
+        ra:    { fio2: 0.21, lpm: 0 },
+        nc1:   { fio2: 0.24, lpm: 1 },
+        nc2:   { fio2: 0.28, lpm: 2 },
+        nc3:   { fio2: 0.32, lpm: 3 },
+        nc4:   { fio2: 0.36, lpm: 4 },
+        nc5:   { fio2: 0.40, lpm: 5 },
+        sm5:   { fio2: 0.40, lpm: 5 },
+        sm6:   { fio2: 0.50, lpm: 6 },
+        sm7:   { fio2: 0.60, lpm: 7 },
+        nrbm6: { fio2: 0.60, lpm: 6 },
+        nrbm7: { fio2: 0.70, lpm: 7 },
+        nrbm8: { fio2: 0.80, lpm: 8 },
+        nrbm9: { fio2: 0.90, lpm: 9 },
+        nrbm10:{ fio2: 0.99, lpm: 10 },
+        jr:    { fio2: 1.00, lpm: 12 }
+      };
+
+      if (mapDevice[dev]) {
+        fio2Input.value = mapDevice[dev].fio2.toFixed(2);
+        lpmInput.value = mapDevice[dev].lpm;
+      }
+      calcOxy();
+    }
+
+    function interpretAcidBase(ph, pco2, hco3) {
+      const phNorm = (ph >= 7.35 && ph <= 7.45);
+      const pco2Norm = (pco2 >= 35 && pco2 <= 45);
+      const hco3Norm = (hco3 >= 22 && hco3 <= 26);
+
+      if (phNorm && pco2Norm && hco3Norm) {
+        return '✅ NORMAL (Keseimbangan Asam-Basa Normal)';
+      }
+
+      if (phNorm) {
+        if (pco2 > 45 && hco3 > 26) {
+          return (ph < 7.40) ? 'Asidosis Respiratorik — Terkompensasi Sempurna' : 'Alkalosis Metabolik — Terkompensasi Sempurna';
+        }
+        if (pco2 < 35 && hco3 < 22) {
+          return (ph >= 7.40) ? 'Alkalosis Respiratorik — Terkompensasi Sempurna' : 'Asidosis Metabolik — Terkompensasi Sempurna';
+        }
+        return 'Gangguan Asam-Basa Ringan dengan pH Normal (Terkompensasi Sempurna)';
+      }
+
+      if (ph < 7.35) {
+        if (hco3 < 22 && pco2 > 45) return '⚠️ Asidosis Campuran (Mixed Metabolic & Respiratory Acidosis)';
+        if (hco3 < 22) {
+          if (pco2 < 35) return 'Asidosis Metabolik — Terkompensasi Sebagian';
+          return 'Asidosis Metabolik — Tidak Terkompensasi (Murni)';
+        }
+        if (pco2 > 45) {
+          if (hco3 > 26) return 'Asidosis Respiratorik — Terkompensasi Sebagian';
+          return 'Asidosis Respiratorik — Tidak Terkompensasi (Murni)';
+        }
+        return 'Asidosis (Evaluasi Klinis & Elektrolit)';
+      }
+
+      if (ph > 7.45) {
+        if (hco3 > 26 && pco2 < 35) return '⚠️ Alkalosis Campuran (Mixed Metabolic & Respiratory Alkalosis)';
+        if (hco3 > 26) {
+          if (pco2 > 45) return 'Alkalosis Metabolik — Terkompensasi Sebagian';
+          return 'Alkalosis Metabolik — Tidak Terkompensasi (Murni)';
+        }
+        if (pco2 < 35) {
+          if (hco3 < 22) return 'Alkalosis Respiratorik — Terkompensasi Sebagian';
+          return 'Alkalosis Respiratorik — Tidak Terkompensasi (Murni)';
+        }
+        return 'Alkalosis (Evaluasi Klinis & Elektrolit)';
+      }
+      return '';
+    }
+
+    function calcAGD() {
+      const bb = getBB();
+      const ph = parseFloat(document.getElementById('agd_ph').value) || 7.40;
+      const pco2 = parseFloat(document.getElementById('agd_pco2').value) || 40;
+      const hco3 = parseFloat(document.getElementById('agd_hco3').value) || 24;
+      const be = parseFloat(document.getElementById('agd_be').value) || 0;
+      const na = parseFloat(document.getElementById('agd_na').value) || 140;
+      const cl = parseFloat(document.getElementById('agd_cl').value) || 104;
+      const targetHco3 = parseFloat(document.getElementById('agd_target_hco3').value) || 24;
+
+      const primaryDiag = interpretAcidBase(ph, pco2, hco3);
+
+      const ag = na - (cl + hco3);
+      const deltaAG = ag - 12;
+      const deltaHCO3 = 24 - hco3;
+      const deltaGap = deltaHCO3 !== 0 ? (deltaAG / deltaHCO3) : 0;
+
+      let agInterp = 'Normal Anion Gap (10 - 14)';
+      if (ag > 14) {
+        if (deltaGap < 1) agInterp = 'High AG Metabolic Acidosis + Non-AG Acidosis (ΔΔ < 1)';
+        else if (deltaGap <= 2) agInterp = 'Pure High Anion Gap Metabolic Acidosis (ΔΔ 1 - 2)';
+        else agInterp = 'High AG Metabolic Acidosis + Metabolic Alkalosis (ΔΔ > 2)';
+      }
+
+      const winterMin = (1.5 * hco3 + 8) - 2;
+      const winterMax = (1.5 * hco3 + 8) + 2;
+
+      const bicarbNeeded = (1 / 3) * bb * Math.abs(be);
+      const hclDeficit = 0.5 * bb * Math.max(0, hco3 - targetHco3);
+
+      document.getElementById('agd_result').innerHTML = `
+        <div style="background:#0284c7; color:#fff; padding:7px 10px; border-radius:6px; font-weight:700; font-size:0.88rem; margin-bottom:6px;">
+          KESIMPULAN AGD: ${primaryDiag}
+        </div>
+        <div class="res-row"><span>Anion Gap [Na - (Cl + HCO3)]:</span><strong>${ag.toFixed(1)} mEq/L</strong></div>
+        <div class="res-row"><span>ΔΔ Gap (ΔAG / ΔHCO3):</span><strong>${deltaGap.toFixed(2)} (${agInterp})</strong></div>
+        <div class="res-row"><span>Target Kompensasi pCO2 (Rumus Winter):</span><strong>${winterMin.toFixed(1)} – ${winterMax.toFixed(1)} mmHg</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span><strong>Alkali Therapy (⅓ × BB × |BE|):</strong></span><strong>${bicarbNeeded.toFixed(1)} mEq Meylon</strong></div>
+        <div style="font-size:0.75rem;">→ ½ bolus (${(bicarbNeeded/2).toFixed(1)} mEq) 10-15 mnt, ½ drip (${(bicarbNeeded/2).toFixed(1)} mEq) dlm 100cc NS (20 tpm)</div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>Defisit HCl (Alkalosis: 0.5 × BB × ΔHCO3):</span><strong>${hclDeficit.toFixed(1)} mEq</strong></div>
+      `;
+    }
+
+    function calcOxy() {
+      const po2 = parseFloat(document.getElementById('ox_po2').value) || 0;
+      const pco2 = parseFloat(document.getElementById('ox_pco2').value) || 0;
+      const fio2 = parseFloat(document.getElementById('ox_fio2').value) || 0.21;
+      const ncLpm = parseFloat(document.getElementById('ox_nc_lpm').value) || 0;
+      const devSelect = document.getElementById('ox_device');
+      const devText = devSelect.options[devSelect.selectedIndex].text;
+
+      const pAO2 = (713 * fio2) - (pco2 / 0.8);
+      const aado2 = pAO2 - po2;
+      const fio2Needed = ((aado2 + 150) / 700) * 100;
+      const pfRatio = po2 / fio2;
+
+      let ardsClass = '✅ Normal / Non-ARDS (P/F Ratio > 300 mmHg)';
+      let ardsBg = '#059669';
+      if (pfRatio <= 100) {
+        ardsClass = '🚨 ARDS SEVERE / BERAT (P/F Ratio ≤ 100 mmHg)';
+        ardsBg = '#be123c';
+      } else if (pfRatio <= 200) {
+        ardsClass = '⚠️ ARDS MODERATE / SEDANG (P/F Ratio 101 – 200 mmHg)';
+        ardsBg = '#d97706';
+      } else if (pfRatio <= 300) {
+        ardsClass = '⚡ ARDS MILD / RINGAN (P/F Ratio 201 – 300 mmHg)';
+        ardsBg = '#0284c7';
+      }
+
+      const po2Nrbm = (po2 * 0.21) / fio2;
+      const po2Nc = (po2 * 21) / (21 + (4 * ncLpm));
+
+      document.getElementById('ox_result').innerHTML = `
+        <div style="background:${ardsBg}; color:#fff; padding:7px 10px; border-radius:6px; font-weight:700; font-size:0.86rem; margin-bottom:6px;">
+          DERAJAT OKSIGENASI / ARDS: ${ardsClass}
+        </div>
+        <div class="res-row"><span>Modalitas O2 Saat Ini:</span><strong>${devText}</strong></div>
+        <div class="res-row"><span>FiO2 Terukur:</span><strong>${(fio2*100).toFixed(0)}% (Fraksi ${fio2.toFixed(2)})</strong></div>
+        <div class="res-row"><span><strong>PaO2 / FiO2 (P/F Ratio):</strong></span><strong style="font-size:0.95rem;">${pfRatio.toFixed(0)} mmHg</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>PAO2 Alveolar [713 × FiO2 - (pCO2 / 0.8)]:</span><strong>${pAO2.toFixed(1)} mmHg</strong></div>
+        <div class="res-row"><span>AaDO2 (PAO2 - pO2 BGA):</span><strong>${aado2.toFixed(1)} mmHg</strong></div>
+        <div class="res-row"><span><strong>FiO2 Needed [(AaDO2 + 150)/700 × 100%]:</strong></span><strong>${Math.min(100, Math.max(21, fio2Needed)).toFixed(1)}%</strong></div>
+        <div class="res-divider"></div>
+        <div class="res-row"><span>Konversi pO2 NRBM [(pO2 × 0.21) / FiO2]:</span><strong>${po2Nrbm.toFixed(1)} mmHg</strong></div>
+        <div class="res-row"><span>Konversi pO2 NC ${ncLpm} Lpm [(pO2 × 21)/(21 + 4×O2)]:</span><strong>${po2Nc.toFixed(1)} mmHg</strong></div>
+      `;
+    }
+
+    // ==================== 7. TABEL & KALKULATOR DRIP OBAT ====================
+    function renderDripSection() {
+      const container = document.getElementById('drip-content');
+
+      if (currentDrip === 'ne100') {
+        const doses = [];
+        for (let d = 0.05; d <= 2.001; d += 0.05) doses.push(Number(d.toFixed(2)));
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <div class="res-row">
+              <div>
+                <strong>Norepinephrine (NE) — 2 Ampul (Total 8 mg) dalam 100 cc NS (80 mcg/cc)</strong>
+                <div style="font-size:0.74rem;">Onset: 1–2 mnt | Durasi: 1–2 mnt | Satuan: <strong>cc/jam (atau tpm mikro)</strong></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="font-size:0.75rem; font-weight:700;">Dosis (mcg/kg/mnt):</label>
+                <input type="number" id="custom_ne100" value="0.10" step="0.05" oninput="updateCustomDrip('ne100')" style="width:75px;">
+                <span id="res_ne100" class="badge badge-blue" style="font-size:0.85rem; padding:6px 10px;"></span>
+              </div>
+            </div>
+          </div>
+          ${buildWeightTable(doses, [50, 60, 70, 80, 90, 100], (d, w) => Math.round((d * w * 60) / 80), 'mcg/kg/min')}
+        `;
+        updateCustomDrip('ne100');
+      }
+
+      else if (currentDrip === 'ne50') {
+        const doses = [];
+        for (let d = 0.05; d <= 1.001; d += 0.05) doses.push(Number(d.toFixed(2)));
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <div class="res-row">
+              <div>
+                <strong>Norepinephrine (NE) — 1 Ampul (4 mg) dalam 50 cc Syringe Pump (80 mcg/mL)</strong>
+                <div style="font-size:0.74rem;">Satuan Tabel: <strong>mL/jam</strong></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="font-size:0.75rem; font-weight:700;">Dosis (mcg/kg/mnt):</label>
+                <input type="number" id="custom_ne50" value="0.10" step="0.05" oninput="updateCustomDrip('ne50')" style="width:75px;">
+                <span id="res_ne50" class="badge badge-blue" style="font-size:0.85rem; padding:6px 10px;"></span>
+              </div>
+            </div>
+          </div>
+          ${buildWeightTable(doses, [40, 45, 50, 55, 60, 65, 70], (d, w) => ((d * w * 60) / 80).toFixed(1), 'mcg/kg/min')}
+        `;
+        updateCustomDrip('ne50');
+      }
+
+      else if (currentDrip === 'dopa') {
+        const doses = [];
+        for (let d = 2; d <= 20; d += 1) doses.push(d);
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <div class="res-row">
+              <div>
+                <strong>Dopamine — Dosis 2–20 mcg/kgBB/menit (200 mg dalam 50 cc = 4000 mcg/cc)</strong>
+                <div style="font-size:0.74rem;">Onset: 5 mnt | Durasi: &lt;10 mnt | Half-life: 2 mnt | Ekskresi: Urine (80%)</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="font-size:0.75rem; font-weight:700;">Dosis (mcg/kg/mnt):</label>
+                <input type="number" id="custom_dopa" value="5" step="1" oninput="updateCustomDrip('dopa')" style="width:75px;">
+                <span id="res_dopa" class="badge badge-blue" style="font-size:0.85rem; padding:6px 10px;"></span>
+              </div>
+            </div>
+          </div>
+          ${buildWeightTable(doses, [50, 60, 70, 80, 90, 100], (d, w) => Math.round((d * w * 60) / 4000), 'mcg/kg/min')}
+        `;
+        updateCustomDrip('dopa');
+      }
+
+      else if (currentDrip === 'dobu') {
+        const doses = [];
+        for (let d = 2; d <= 20; d += 1) doses.push(d);
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <div class="res-row">
+              <div>
+                <strong>Dobutamine — Dosis 2–20 mcg/kgBB/menit (250 mg dalam 50 cc = 5000 mcg/cc)</strong>
+                <div style="font-size:0.74rem;">Satuan Tabel: <strong>cc/jam</strong></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="font-size:0.75rem; font-weight:700;">Dosis (mcg/kg/mnt):</label>
+                <input type="number" id="custom_dobu" value="5" step="1" oninput="updateCustomDrip('dobu')" style="width:75px;">
+                <span id="res_dobu" class="badge badge-blue" style="font-size:0.85rem; padding:6px 10px;"></span>
+              </div>
+            </div>
+          </div>
+          ${buildWeightTable(doses, [50, 60, 70, 80, 90, 100], (d, w) => Math.round((d * w * 60) / 5000), 'mcg/kg/min')}
+        `;
+        updateCustomDrip('dobu');
+      }
+
+      else if (currentDrip === 'gtn') {
+        const gtnDoses = [5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,200];
+        let rows = gtnDoses.map(d => `
+          <tr>
+            <td style="font-weight:700;">${d} mcg/min</td>
+            <td style="font-weight:700; color:#0284c7;">${((d * 60) / 500).toFixed(1)} cc/jam (tpm mikro)</td>
+          </tr>
+        `).join('');
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <div class="res-row">
+              <div>
+                <strong>Glyceryl Trinitrate (GTN) — 1 Ampul (50 mg) dalam 100 cc NS (500 mcg/cc)</strong>
+                <div style="font-size:0.74rem;">Dosis 5–200 mcg/min | Onset: 1–3 mnt | Durasi: 3–5 mnt | Half-life: 1–4 mnt</div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <label style="font-size:0.75rem; font-weight:700;">Dosis (mcg/mnt):</label>
+                <input type="number" id="custom_gtn" value="10" step="5" oninput="updateCustomDrip('gtn')" style="width:75px;">
+                <span id="res_gtn" class="badge badge-blue" style="font-size:0.85rem; padding:6px 10px;"></span>
+              </div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Dosis GTN (mcg/min)</th><th>Laju Infus (cc/jam atau tpm mikro)</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+        updateCustomDrip('gtn');
+      }
+
+      else if (currentDrip === 'nicar') {
+        const nicarDoses = [0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15];
+        let rows = nicarDoses.map(d => `
+          <tr>
+            <td style="font-weight:700;">${d.toFixed(1)} mg/jam</td>
+            <td style="font-weight:700; color:#0284c7;">${(d / 0.2).toFixed(1)} cc/jam</td>
+            <td style="font-weight:700; color:#065f46;">${(d / 0.1).toFixed(1)} cc/jam</td>
+          </tr>
+        `).join('');
+        container.innerHTML = `
+          <div class="res-box res-blue" style="margin-bottom:12px;">
+            <strong>Nicardipine & Nimodipine (Neuro-Vascular / Hipertensi Emergensi)</strong>
+            <div style="font-size:0.76rem; margin-top:4px;">
+              • <strong>Nicardipine Syringe Pump (1 amp 10 mg dlm 50 cc NS):</strong> Konsentrasi = <strong>0.2 mg/cc</strong> (Mulai 0.5–5 mg/jam, titrasi tiap 15 mnt, maks 15 mg/jam).<br>
+              • <strong>Nicardipine Infus (1 amp 10 mg dlm 100 cc NS):</strong> Konsentrasi = <strong>0.1 mg/cc</strong>.<br>
+              • <strong>Nimodipine IV (Botol 10 mg / 50 mL = 0.2 mg/mL):</strong> Mulai 1 mg/jam (<strong>5 mL/jam</strong>) selama 2 jam pertama; jika TD stabil naikkan menjadi 2 mg/jam (<strong>10 mL/jam</strong>).
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Target Dosis Nicardipine</th>
+                  <th>Syringe 10 mg / 50 cc (0.2 mg/cc)</th>
+                  <th>Infus 10 mg / 100 cc (0.1 mg/cc)</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      else if (currentDrip === 'other') {
+        container.innerHTML = `
+          <div class="grid-2" style="margin-top:0;">
+            <div class="note-box">
+              <strong style="font-size:0.9rem; color:#0f172a;">FUROSEMIDE DRIP</strong>
+              <div class="res-divider"></div>
+              <p><strong>• Target 10 mg/jam:</strong> Larutkan <strong>5 ampul</strong> Furosemide (total 100 mg) dalam 100 cc NS (1 mg/cc) → Laju <strong>10 cc/jam</strong> (10 tpm mikro).</p>
+              <p style="margin-top:6px;"><strong>• Target 20 mg/jam:</strong> Larutkan <strong>10 ampul</strong> Furosemide (total 200 mg) dalam 100 cc NS (2 mg/cc) → Laju <strong>10 cc/jam</strong> (10 tpm mikro).</p>
+              <p style="margin-top:6px; font-size:0.72rem; color:#64748b;">Onset IV: 5 mnt | Peak IV: &lt;15 mnt | Durasi IV: 2 jam | Half-life: 30–120 mnt (9 jam pada ESRD).</p>
+            </div>
+            <div class="note-box">
+              <strong style="font-size:0.9rem; color:#0f172a;">LANSOPRAZOLE & OCTREOTIDE (UGIB)</strong>
+              <div class="res-divider"></div>
+              <p><strong>• Lansoprazole (6 mg/jam):</strong> Bolus 2 ampul IV, lanjutkan drip 2 ampul (total 60 mg) dalam 100 cc NS (0.6 mg/cc) → Laju <strong>10 cc/jam</strong> (10 tpm mikro).</p>
+              <p style="margin-top:6px;"><strong>• Octreotide (50 mcg/jam):</strong> Bolus 50 mcg IV, lanjutkan drip 1 ampul dalam 100 cc NS (100 mcg/100 cc) → Laju <strong>50 cc/jam</strong> (50 tpm mikro).</p>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function updateCustomDrip(type) {
+      const bb = getBB();
+      if (type === 'ne100') {
+        const d = parseFloat(document.getElementById('custom_ne100').value) || 0;
+        document.getElementById('res_ne100').innerText = `${((d * bb * 60) / 80).toFixed(1)} cc/jam (BB ${bb}kg)`;
+      } else if (type === 'ne50') {
+        const d = parseFloat(document.getElementById('custom_ne50').value) || 0;
+        document.getElementById('res_ne50').innerText = `${((d * bb * 60) / 80).toFixed(1)} mL/jam (BB ${bb}kg)`;
+      } else if (type === 'dopa') {
+        const d = parseFloat(document.getElementById('custom_dopa').value) || 0;
+        document.getElementById('res_dopa').innerText = `${((d * bb * 60) / 4000).toFixed(1)} cc/jam (BB ${bb}kg)`;
+      } else if (type === 'dobu') {
+        const d = parseFloat(document.getElementById('custom_dobu').value) || 0;
+        document.getElementById('res_dobu').innerText = `${((d * bb * 60) / 5000).toFixed(1)} cc/jam (BB ${bb}kg)`;
+      } else if (type === 'gtn') {
+        const d = parseFloat(document.getElementById('custom_gtn').value) || 0;
+        document.getElementById('res_gtn').innerText = `${((d * 60) / 500).toFixed(1)} cc/jam`;
+      }
+    }
+
+    function buildWeightTable(doses, weights, formulaFn, doseUnit) {
+      const headCols = weights.map(w => `<th>BB ${w} kg</th>`).join('');
+      const rows = doses.map(d => {
+        const cells = weights.map(w => `<td>${formulaFn(d, w)}</td>`).join('');
+        return `<tr><td style="font-weight:700; background:#f8fafc;">${d.toFixed(2)}</td>${cells}</tr>`;
+      }).join('');
+
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dosis (${doseUnit})</th>${headCols}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    window.onload = function() {
+      calcBunFromUrea();
+      calcSiadhCsws();
+      calcCa();
+      onDeviceChange();
+      syncAll();
+    };
+  </script>
+</body>
+</html>
